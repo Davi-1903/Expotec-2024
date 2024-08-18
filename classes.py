@@ -61,9 +61,9 @@ class Chao(pygame.sprite.Sprite):
     def __init__(self, pos: tuple, item: int) -> None:
         pygame.sprite.Sprite.__init__(self)
         sprite_sheet = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Grass/Grass Tile.png'), [
-            (0, 0, 50, 50),
-            (64, 0, 50, 50),
-            (128, 0, 50, 50)
+            (0, 0, 64, 64),
+            (64, 0, 64, 64),
+            (128, 0, 64, 64)
         ])
         self.image = pygame.transform.scale(sprite_sheet.get_sprites()[item - 1], (50, 50))
         self.rect = self.image.get_rect(topleft = pos)
@@ -327,7 +327,7 @@ class CapivaraIsa(Personagem):
                     self.y_pos = tile.rect.top - 115
                     self.pulando = False
                 elif self.velocidade_y < 0:
-                    self.y_pos = tile.rect.bottom
+                    self.y_pos = tile.rect.bottom - 30
                 self.velocidade_y = 0
 
 
