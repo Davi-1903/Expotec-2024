@@ -114,7 +114,7 @@ class SpriteSheet:
         self.sprite_flipped = []
         for pos in sprite_position:
             sprite = sprite_sheet.subsurface(pygame.Rect(pos))
-            sprite = pygame.transform.scale(sprite, (128, 128)) # Temporário
+            sprite = pygame.transform.scale(sprite, (96, 96)) # Temporário
             self.sprite.append(sprite)
             sprite = pygame.transform.flip(sprite, True, False)
             self.sprite_flipped.append(sprite)
@@ -224,7 +224,7 @@ class CapivaraIsa(Personagem):
         self.gravidade()
 
         if self.life > 0: # Talvez usar o `life_show`
-            self.draw_life_bar(self.screen, 96)
+            self.draw_life_bar(self.screen, 72)
 
             # TROCAR ESTADO =============================================
             keys = pygame.key.get_pressed()
@@ -299,9 +299,9 @@ class CapivaraIsa(Personagem):
     
     def atirar(self) -> None:
         if self.face_right:
-            self.sprite_group_projeteis.add(Bala((self.x_pos + 80, self.y_pos + 84), 28, 10, self.sprite_group_personagens))
+            self.sprite_group_projeteis.add(Bala((self.x_pos + 60, self.y_pos + 63), 28, 10, self.sprite_group_personagens))
         else:
-            self.sprite_group_projeteis.add(Bala((self.x_pos + 45, self.y_pos + 84), -28, 10, self.sprite_group_personagens))
+            self.sprite_group_projeteis.add(Bala((self.x_pos + 32, self.y_pos + 63), -28, 10, self.sprite_group_personagens))
         self.x_pos += -2 if self.face_right else 2
     
     def gravidade(self) -> None:
@@ -320,14 +320,12 @@ class CapivaraIsa(Personagem):
     
     def colisao(self) -> None: # Agora aqui tem gambiarra...
         for tile in self.sprite_group_superficie:
-            if tile.rect.colliderect(self.x_pos + 18 + self.deslocamento_x, self.y_pos + 29, 96, 86):
+            if tile.rect.colliderect(self.x_pos + 10.5 + self.deslocamento_x, self.y_pos + 11.25 + self.velocidade_y, 76.5, 64.5):
                 self.deslocamento_x = 0
-            if tile.rect.colliderect(self.x_pos + 18, self.y_pos + 30, 96, 86 + self.velocidade_y):
-                if self.velocidade_y >= 0:
-                    self.y_pos = tile.rect.top - 115
+            if tile.rect.colliderect(self.x_pos + 10.5, self.y_pos + 21.75 + self.velocidade_y, 76.5, 64.5):
+                if self.velocidade_y > 0:
+                    self.y_pos = tile.rect.top - 76.5
                     self.pulando = False
-                elif self.velocidade_y < 0:
-                    self.y_pos = tile.rect.bottom - 30
                 self.velocidade_y = 0
 
 
