@@ -1,4 +1,3 @@
-from typing import Any
 import pygame
 from constantes import *
 
@@ -320,7 +319,7 @@ class CapivaraIsa(Personagem):
     
     def colisao(self) -> None: # Agora aqui tem gambiarra...
         for tile in self.sprite_group_superficie:
-            if tile.rect.colliderect(self.x_pos + 10.5 + self.deslocamento_x, self.y_pos + 11.25 + self.velocidade_y, 76.5, 64.5):
+            if tile.rect.colliderect(self.x_pos + 10.5 + self.deslocamento_x, self.y_pos + 21.25 + self.velocidade_y, 76.5, 54.5):
                 self.deslocamento_x = 0
             if tile.rect.colliderect(self.x_pos + 10.5, self.y_pos + 21.75 + self.velocidade_y, 76.5, 64.5):
                 if self.velocidade_y > 0:
