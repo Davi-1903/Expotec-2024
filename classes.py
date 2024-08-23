@@ -6,6 +6,7 @@ from constantes import *
 class Level:
     def __init__(self, display_surface) -> None:
         self.screen = display_surface
+        self.scroll = 0
 
         self.background = Background()
 
@@ -13,11 +14,28 @@ class Level:
         self.sprite_group_personagem = pygame.sprite.GroupSingle()
         self.sprite_group_projeteis = pygame.sprite.Group()
 
-        self.sprite_group_personagem.add(CapivaraIsa((50, 500), 200, True, self.screen, self.sprite_group_personagem, self.sprite_group_projeteis, self.sprite_group_superficie))
+        self.personagem = CapivaraIsa((450, 500), 200, True, self.screen, self.sprite_group_personagem, self.sprite_group_projeteis, self.sprite_group_superficie)
+        self.sprite_group_personagem.add(self.personagem)
     
     def update(self) -> None:
         self.sprite_group_personagem.update()
         self.sprite_group_projeteis.update()
+
+        # Mover cenário
+        if self.personagem.rect.left + 14 < 225 and not self.personagem.face_right or self.personagem.rect.right - 10 > 675 and self.personagem.face_right:
+            self.scroll += -self.personagem.deslocamento_x
+        
+        # Parar de mover o cenário e move a capivara
+        if self.scroll > 0:
+            self.scroll = 0
+            if self.personagem.deslocamento_x != 0 and self.personagem.rect.left + 14 > 0:
+                self.personagem.mover()
+        if self.scroll < -len(self.background.mapa[0]) * 25:
+            self.scroll = -len(self.background.mapa[0]) * 25
+            if self.personagem.deslocamento_x != 0 and self.personagem.rect.right - 10 < LARGURA:
+                self.personagem.mover()
+
+        self.background.update(self.scroll)
     
     def draw(self) -> None:
         self.sprite_group_superficie.draw(self.screen)
@@ -30,33 +48,37 @@ class Level:
 
 
 # ============================= BACKGROUND =============================
-class Background:
+class Background: # Provisório
     def __init__(self) -> None:
         self.sprite_group_superficie = pygame.sprite.Group()
 
-        mapa = [ # Mapa provisório, só para testes
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [1, 1, 1, 1, 1, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        self.mapa = [ # Mapa provisório, só para testes
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 1, 1, 1, 1, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
         ]
 
-        for idx_l, linha in enumerate(mapa):
+        for idx_l, linha in enumerate(self.mapa):
             for idx_c, item in enumerate(linha):
                 if item != 0:
-                    self.sprite_group_superficie.add(Chao((idx_c * 50, idx_l * 50), item))
+                    self.sprite_group_superficie.add(Tile((idx_c * 50, idx_l * 50), item))
+        
+    def update(self, scroll) -> None:
+        for tile in self.sprite_group_superficie:
+            tile.mover(scroll)
 
 
 # ============================= CHÃO =============================
-class Chao(pygame.sprite.Sprite):
+class Tile(pygame.sprite.Sprite):
     def __init__(self, pos: tuple, item: int) -> None:
         pygame.sprite.Sprite.__init__(self)
         sprite_sheet = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Grass/Grass Tile.png'), [
@@ -66,6 +88,10 @@ class Chao(pygame.sprite.Sprite):
         ])
         self.image = pygame.transform.scale(sprite_sheet.get_sprites()[item - 1], (50, 50))
         self.rect = self.image.get_rect(topleft = pos)
+        self.x_origin = pos[0]
+    
+    def mover(self, scroll: int) -> None:
+        self.rect.x = self.x_origin + scroll
 
 
 # ============================= PERSONAGEM =============================
@@ -97,12 +123,14 @@ class Projeteis(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.dano = dano
     
-    def colisao(self, sprite_group) -> bool:
-        for item in pygame.sprite.spritecollide(self, sprite_group, False, pygame.sprite.collide_mask):
-            if isinstance(item, Personagem):
-                item.damage(self.dano)
-                return True
-        return False
+    def colisao(self, sprite_groups) -> bool:
+        resultado = False
+        for sprite_group in sprite_groups:
+            for item in pygame.sprite.spritecollide(self, sprite_group, False, pygame.sprite.collide_mask):
+                if isinstance(item, Personagem):
+                    item.damage(self.dano)
+                resultado = True
+        return resultado
 
 
 # ============================= SPRITE SHEET =============================
@@ -264,13 +292,11 @@ class CapivaraIsa(Personagem):
             self.mask = pygame.mask.from_surface(self.image)
             self.rect = self.image.get_rect(topleft = (self.x_pos, self.y_pos))
 
-            # Cenário começa a se mover
-            # if self.rect.left + 14 < 0 and not self.face_right or self.rect.centerx >= LARGURA // 4 and self.face_right:
-            #     self.x_dir = 0
-
             self.colisao()
 
-            self.mover()
+            # PARAR A CAPIVARA
+            if self.rect.left + 14 >= 225 and not self.face_right or self.rect.right - 10 <= 675 and self.face_right:
+                self.mover()
 
         elif self.image_idx is not None:
             self.estado = 'DEATH'
@@ -298,10 +324,9 @@ class CapivaraIsa(Personagem):
     
     def atirar(self) -> None:
         if self.face_right:
-            self.sprite_group_projeteis.add(Bala((self.x_pos + 60, self.y_pos + 63), 28, 10, self.sprite_group_personagens))
+            self.sprite_group_projeteis.add(Bala((self.x_pos + 60, self.y_pos + 63), 28, 10, [self.sprite_group_personagens, self.sprite_group_superficie]))
         else:
-            self.sprite_group_projeteis.add(Bala((self.x_pos + 32, self.y_pos + 63), -28, 10, self.sprite_group_personagens))
-        self.x_pos += -2 if self.face_right else 2
+            self.sprite_group_projeteis.add(Bala((self.x_pos + 32, self.y_pos + 63), -28, 10, [self.sprite_group_personagens, self.sprite_group_superficie]))
     
     def gravidade(self) -> None:
         self.velocidade_y += GRAVIDADE
