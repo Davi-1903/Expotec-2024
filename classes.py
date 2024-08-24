@@ -8,17 +8,40 @@ class Level:
         self.screen = display_surface
         self.scroll = 0
 
-        self.background = Background()
-
-        self.sprite_group_superficie = self.background.sprite_group_superficie
+        self.sprite_group_superficie = pygame.sprite.Group()
         self.sprite_group_personagem = pygame.sprite.GroupSingle()
+        self.sprite_group_inimigos = pygame.sprite.Group()
         self.sprite_group_projeteis = pygame.sprite.Group()
 
-        self.personagem = CapivaraIsa((450, 500), 200, True, self.screen, self.sprite_group_personagem, self.sprite_group_projeteis, self.sprite_group_superficie)
+        self.mapa = [ # Mapa provisório, só para testes
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 3, 3, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 1, 1, 1, 1, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        ]
+
+        for idx_l, linha in enumerate(self.mapa):
+            for idx_c, item in enumerate(linha):
+                if item != 0:
+                    self.sprite_group_superficie.add(Tile((idx_c * 50, idx_l * 50), item))
+
+        self.personagem = CapivaraIsa((50, 500), 200, True, self.screen, self.sprite_group_inimigos, self.sprite_group_projeteis, self.sprite_group_superficie)
         self.sprite_group_personagem.add(self.personagem)
+        self.sprite_group_inimigos.add(Espantalho((500, 300), 100, True, self.screen, self.sprite_group_personagem, self.sprite_group_projeteis, self.sprite_group_superficie))
+        self.sprite_group_inimigos.add(Espantalho((500, 500), 100, True, self.screen, self.sprite_group_personagem, self.sprite_group_projeteis, self.sprite_group_superficie))
+        self.sprite_group_inimigos.add(Espantalho((1100, 200), 100, True, self.screen, self.sprite_group_personagem, self.sprite_group_projeteis, self.sprite_group_superficie))
     
     def update(self) -> None:
         self.sprite_group_personagem.update()
+        self.sprite_group_inimigos.update()
         self.sprite_group_projeteis.update()
 
         # Mover cenário
@@ -30,51 +53,27 @@ class Level:
             self.scroll = 0
             if self.personagem.deslocamento_x != 0 and self.personagem.rect.left + 14 > 0:
                 self.personagem.mover()
-        if self.scroll < -len(self.background.mapa[0]) * 25:
-            self.scroll = -len(self.background.mapa[0]) * 25
+        if self.scroll < -len(self.mapa[0]) * 25:
+            self.scroll = -len(self.mapa[0]) * 25
             if self.personagem.deslocamento_x != 0 and self.personagem.rect.right - 10 < LARGURA:
                 self.personagem.mover()
+        
+        # Corringo a posição do inimigo
+        for inimigo in self.sprite_group_inimigos:
+            inimigo.x_pos = inimigo.x_origin + self.scroll
 
-        self.background.update(self.scroll)
+        for tile in self.sprite_group_superficie:
+            tile.mover(self.scroll)
     
     def draw(self) -> None:
         self.sprite_group_superficie.draw(self.screen)
         self.sprite_group_personagem.draw(self.screen)
+        self.sprite_group_inimigos.draw(self.screen)
         self.sprite_group_projeteis.draw(self.screen)
     
     def run(self) -> None:
         self.update()
         self.draw()
-
-
-# ============================= BACKGROUND =============================
-class Background: # Provisório
-    def __init__(self) -> None:
-        self.sprite_group_superficie = pygame.sprite.Group()
-
-        self.mapa = [ # Mapa provisório, só para testes
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [1, 1, 1, 1, 1, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-        ]
-
-        for idx_l, linha in enumerate(self.mapa):
-            for idx_c, item in enumerate(linha):
-                if item != 0:
-                    self.sprite_group_superficie.add(Tile((idx_c * 50, idx_l * 50), item))
-        
-    def update(self, scroll) -> None:
-        for tile in self.sprite_group_superficie:
-            tile.mover(scroll)
 
 
 # ============================= CHÃO =============================
@@ -110,7 +109,7 @@ class Personagem(pygame.sprite.Sprite):
     
     def draw_life_bar(self, display_surface, width: int) -> None:
         if self.life_show > self.life:
-            self.life_show -= 1
+            self.life_show -= 2
         
         pygame.draw.rect(display_surface, (48, 48, 64), (self.x_pos + 18, self.y_pos - 20, width, 16), border_radius=5) # Gambiarra...
         pygame.draw.rect(display_surface, (0, 255, 0), (self.x_pos + 18, self.y_pos - 20, self.life_show / self.max_life * width, 16), border_radius=5) # Gambiarra...
@@ -124,13 +123,12 @@ class Projeteis(pygame.sprite.Sprite):
         self.dano = dano
     
     def colisao(self, sprite_groups) -> bool:
-        resultado = False
         for sprite_group in sprite_groups:
             for item in pygame.sprite.spritecollide(self, sprite_group, False, pygame.sprite.collide_mask):
                 if isinstance(item, Personagem):
                     item.damage(self.dano)
-                resultado = True
-        return resultado
+                return True
+        return False
 
 
 # ============================= SPRITE SHEET =============================
@@ -154,7 +152,7 @@ class SpriteSheet:
 
 # ============================= CAPIVARA =============================
 class CapivaraIsa(Personagem):
-    def __init__(self, pos: tuple, life: int, face_right, screen, sprite_group_personagens, sprite_group_projeteis, sprite_group_superficie) -> None:
+    def __init__(self, pos: tuple, life: int, face_right, screen, sprite_group_inimigos, sprite_group_projeteis, sprite_group_superficie) -> None:
         Personagem.__init__(self, pos, life, face_right) # Só um teste...
         sprite_sheet_idle = SpriteSheet(
             os.path.join(DIRETORIO_IMAGENS, 'Capivara Sprites/capivara_tatica_parada.png'),
@@ -234,7 +232,7 @@ class CapivaraIsa(Personagem):
         }
 
         self.screen = screen
-        self.sprite_group_personagens = sprite_group_personagens
+        self.sprite_group_inimigos = sprite_group_inimigos
         self.sprite_group_projeteis = sprite_group_projeteis
         self.sprite_group_superficie = sprite_group_superficie
         self.balas_cadencia = 0
@@ -269,14 +267,14 @@ class CapivaraIsa(Personagem):
                 self.estado = 'JUMP'
             
             # ATIRAR ======================================================
-            if (keys[pygame.K_s] or keys[pygame.K_DOWN]) and self.balas_cadencia == 0:
+            if keys[pygame.K_f] and self.balas_cadencia == 0:
                 self.balas_cadencia = 5
                 self.atirar()
             if self.balas_cadencia > 0:
                 self.balas_cadencia -= 1
             
             # PULAR =======================================================
-            if (keys[pygame.K_w] or keys[pygame.K_UP]) and not self.pulando:
+            if (keys[pygame.K_w] or keys[pygame.K_UP] or keys[pygame.K_SPACE]) and not self.pulando:
                 self.estado = 'JUMP'
                 self.velocidade_y = -15
                 self.pulando = True
@@ -324,9 +322,9 @@ class CapivaraIsa(Personagem):
     
     def atirar(self) -> None:
         if self.face_right:
-            self.sprite_group_projeteis.add(Bala((self.x_pos + 60, self.y_pos + 63), 28, 10, [self.sprite_group_personagens, self.sprite_group_superficie]))
+            self.sprite_group_projeteis.add(Bala((self.x_pos + 60, self.y_pos + 63), 28, 10, (12, 6),  [self.sprite_group_inimigos, self.sprite_group_superficie]))
         else:
-            self.sprite_group_projeteis.add(Bala((self.x_pos + 32, self.y_pos + 63), -28, 10, [self.sprite_group_personagens, self.sprite_group_superficie]))
+            self.sprite_group_projeteis.add(Bala((self.x_pos + 32, self.y_pos + 63), -28, 10, (12, 6), [self.sprite_group_inimigos, self.sprite_group_superficie]))
     
     def gravidade(self) -> None:
         self.velocidade_y += GRAVIDADE
@@ -340,7 +338,7 @@ class CapivaraIsa(Personagem):
         if self.image_idx >= len(self.sprites_atual):
             self.image_idx = 0
         if self.estado == 'JUMP' and self.velocidade_y > 0 and self.image_idx >= 7:
-                self.image_idx = 4
+            self.image_idx = 4
     
     def colisao(self) -> None: # Agora aqui tem gambiarra...
         for tile in self.sprite_group_superficie:
@@ -354,17 +352,87 @@ class CapivaraIsa(Personagem):
 
 
 # ============================= BALA =============================
+class Espantalho(Personagem):
+    def __init__(self, pos: tuple, life: int, face_right: bool, screen, sprite_group_personagem, sprite_group_projeteis, sprite_group_superficie) -> None:
+        super().__init__(pos, life, face_right)
+        sprite_sheet_idle = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Espantalho Sprites/Dummy.png'), [(0, 0, 64, 64)])
+
+        self.sprites_sheets = {
+            'IDLE': (sprite_sheet_idle, 0.25)
+        }
+
+        self.screen = screen
+        self.sprite_group_personagem = sprite_group_personagem
+        self.sprite_group_projeteis = sprite_group_projeteis
+        self.sprite_group_superficie = sprite_group_superficie
+        self.balas_cadencia = 0
+        self.image_idx = 0
+        self.estado = 'IDLE'
+        self.x_origin = pos[0]
+        self.speed_animation = self.sprites_sheets[self.estado][1]
+        self.velocidade_y = 0
+        self.pulando = False
+    
+    def update(self) -> None:
+        estado_antes = self.estado
+
+        self.gravidade()
+
+        if self.life > 0:
+            self.draw_life_bar(self.screen, 72)
+
+            if estado_antes != self.estado:
+                self.image_idx = 0
+            
+            self.select_animation()
+
+            self.animar()
+
+            self.image = self.sprites_atual[int(self.image_idx)]
+            self.mask = pygame.mask.from_surface(self.image)
+            self.rect = self.image.get_rect(topleft = (self.x_pos, self.y_pos))
+
+            self.colisao()
+
+        self.rect = self.image.get_rect(topleft = (self.x_pos, self.y_pos))
+    
+    def select_animation(self) -> None:
+        sprite_sheet = self.sprites_sheets[self.estado][0]
+        self.speed_animation = self.sprites_sheets[self.estado][1]
+        self.sprites_atual = sprite_sheet.get_sprites(not self.face_right)
+    
+    def gravidade(self) -> None:
+        self.velocidade_y += GRAVIDADE
+        self.y_pos += self.velocidade_y
+    
+    def animar(self) -> None:
+        self.image_idx += self.speed_animation
+        if self.image_idx >= len(self.sprites_atual):
+            self.image_idx = 0
+    
+    def colisao(self) -> None: # Agora aqui tem gambiarra...
+        for tile in self.sprite_group_superficie:
+            if tile.rect.colliderect(self.x_pos + 10.5, self.y_pos + 21.25, 76.5, 54.5):
+                self.deslocamento_x = 0
+            if tile.rect.colliderect(self.x_pos + 10.5, self.y_pos + 21.75, 76.5, 64.5):
+                if self.velocidade_y > 0:
+                    self.y_pos = tile.rect.top - 76.5
+                    self.pulando = False
+                self.velocidade_y = 0
+
+
+# ============================= BALA =============================
 class Bala(Projeteis):
-    def __init__(self, pos: tuple, velocidade: int, dano: int, sprite_group_personagens) -> None:
+    def __init__(self, pos: tuple, velocidade: int, dano: int, size: tuple, sprite_group_inimigos) -> None:
         Projeteis.__init__(self, dano)
-        self.image = pygame.Surface((12, 6)) # Tamanho temporário
+        self.image = pygame.Surface(size) # Tamanho temporário
         self.image.fill((255, 122, 0))
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect(center=pos)
         self.velocidade = velocidade
-        self.sprite_group_personagens = sprite_group_personagens
+        self.sprite_group_inimigos = sprite_group_inimigos
     
     def update(self) -> None:
         self.rect.x += self.velocidade
-        if self.rect.right < 0 or self.rect.left > LARGURA or self.colisao(self.sprite_group_personagens):
+        if self.rect.right < 0 or self.rect.left > LARGURA or self.colisao(self.sprite_group_inimigos):
             self.kill()
