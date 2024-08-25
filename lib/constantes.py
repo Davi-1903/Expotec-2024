@@ -6,6 +6,7 @@ FPS = 60
 GRAVIDADE = 0.7
 
 DIRETORIO_PRINCIPAL = os.path.dirname(__file__)
-DIRETORIO_IMAGENS = os.path.join(DIRETORIO_PRINCIPAL, 'lib\Images')
+DIRETORIO_IMAGENS = os.path.join(DIRETORIO_PRINCIPAL, 'Images')
 
 VELOCIDADE = 4
+TILE_SIZE = 50

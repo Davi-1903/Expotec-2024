@@ -1,7 +1,7 @@
 import pygame
 from sys import exit
-from constantes import *
-from classes import *
+from lib.constantes import *
+from lib.classes import *
 
 
 class Game:
