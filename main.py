@@ -22,7 +22,7 @@ class Game:
             self.screen.fill((235, 235, 235)) # Temporário
             self.clock.tick(FPS)
             self.eventos()
-            level.run()     
+            level.run()
             pygame.display.flip()
 
     def eventos(self) -> None:

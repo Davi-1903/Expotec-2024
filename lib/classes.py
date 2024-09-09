@@ -4,7 +4,7 @@ from lib.constantes import *
 
 # ============================= LEVEL =============================
 class Level:
-    def __init__(self, display_surface) -> None:
+    def __init__(self, display_surface: pygame.Surface) -> None:
         self.screen = display_surface
         self.scroll = 0
 
@@ -85,11 +85,7 @@ class Level:
 class Tile(pygame.sprite.Sprite):
     def __init__(self, pos: tuple, item: int) -> None:
         pygame.sprite.Sprite.__init__(self)
-        sprite_sheet = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Grass/Grass Tile.png'), [
-            (0, 0, 64, 64),
-            (64, 0, 64, 64),
-            (128, 0, 64, 64)
-        ])
+        sprite_sheet = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Grass/Grass Tile.png'), 64)
         self.image = pygame.transform.scale(sprite_sheet.get_sprites()[item - 1], (TILE_SIZE, TILE_SIZE))
         self.rect = self.image.get_rect(topleft = pos)
         self.x_origin = pos[0]
@@ -112,7 +108,7 @@ class Personagem(pygame.sprite.Sprite):
         if self.life > 0:
             self.life -= dano
     
-    def draw_life_bar(self, display_surface, width: int) -> None:
+    def draw_life_bar(self, display_surface: pygame.Surface, width: int) -> None:
         if self.life_show > self.life:
             self.life_show -= 2
         
@@ -127,7 +123,7 @@ class Projeteis(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.dano = dano
     
-    def colisao(self, sprite_groups) -> bool:
+    def colisao(self, sprite_groups: pygame.sprite.GroupSingle | pygame.sprite.Group) -> bool:
         for sprite_group in sprite_groups:
             for item in pygame.sprite.spritecollide(self, sprite_group, False, pygame.sprite.collide_mask):
                 if isinstance(item, Personagem):
@@ -138,16 +134,19 @@ class Projeteis(pygame.sprite.Sprite):
 
 # ============================= SPRITE SHEET =============================
 class SpriteSheet:
-    def __init__(self, sprite_sheet: str, sprite_position: list) -> None:
+    def __init__(self, sprite_sheet: str, size: int) -> None:
         sprite_sheet = pygame.image.load(sprite_sheet).convert_alpha()
+        width = sprite_sheet.get_width()
+        height = sprite_sheet.get_height()
         self.sprite = []
         self.sprite_flipped = []
-        for pos in sprite_position:
-            sprite = sprite_sheet.subsurface(pygame.Rect(pos))
-            sprite = pygame.transform.scale(sprite, (96, 96)) # Temporário
-            self.sprite.append(sprite)
-            sprite = pygame.transform.flip(sprite, True, False)
-            self.sprite_flipped.append(sprite)
+        for l in range(0, height, size):
+            for c in range(0, width, size):
+                sprite = sprite_sheet.subsurface((c, l, size, size))
+                sprite = pygame.transform.scale(sprite, (96, 96)) # Temporário
+                self.sprite.append(sprite)
+                sprite = pygame.transform.flip(sprite, True, False)
+                self.sprite_flipped.append(sprite)
     
     def get_sprites(self, flip: bool = False) -> list:
         if flip:
@@ -157,77 +156,12 @@ class SpriteSheet:
 
 # ============================= CAPIVARA =============================
 class CapivaraIsa(Personagem):
-    def __init__(self, pos: tuple, life: int, face_right, screen, sprite_group_inimigos, sprite_group_projeteis, sprite_group_superficie) -> None:
+    def __init__(self, pos: tuple, life: int, face_right: bool, screen: pygame.Surface, sprite_group_inimigos: pygame.sprite.Group, sprite_group_projeteis: pygame.sprite.Group, sprite_group_superficie: pygame.sprite.Group) -> None:
         Personagem.__init__(self, pos, life, face_right) # Só um teste...
-        sprite_sheet_idle = SpriteSheet(
-            os.path.join(DIRETORIO_IMAGENS, 'Capivara Sprites/capivara_tatica_parada.png'),
-            [
-                (0, 0, 64, 64),
-                (64, 0, 64, 64),
-                (128, 0, 64, 64),
-                (192, 0, 64, 64),
-                (256, 0, 64, 64),
-                (320, 0, 64, 64),
-                (384, 0, 64, 64),
-                (448, 0, 64, 64)
-            ]
-        )
-        sprite_sheet_run = SpriteSheet(
-            os.path.join(DIRETORIO_IMAGENS, 'Capivara Sprites/capivara_tatica_andando.png'),
-            [
-                (0, 0, 64, 64),
-                (64, 0, 64, 64),
-                (128, 0, 64, 64),
-                (192, 0, 64, 64),
-                (256, 0, 64, 64),
-                (320, 0, 64, 64),
-                (384, 0, 64, 64),
-                (448, 0, 64, 64)
-            ]
-        )
-        sprite_sheet_jump = SpriteSheet(
-            os.path.join(DIRETORIO_IMAGENS, 'Capivara Sprites/capivara_tatica_pulando.png'),
-            [
-                (0, 0, 64, 64),
-                (64, 0, 64, 64),
-                (128, 0, 64, 64),
-                (192, 0, 64, 64),
-                (256, 0, 64, 64),
-                (320, 0, 64, 64),
-                (384, 0, 64, 64),
-                (448, 0, 64, 64)
-            ]
-        )
-        sprite_sheet_death = SpriteSheet(
-            os.path.join(DIRETORIO_IMAGENS, 'Capivara Sprites/capivara_tatica_morrendo.png'),
-            [
-                (0, 0, 64, 64),
-                (64, 0, 64, 64),
-                (128, 0, 64, 64),
-                (192, 0, 64, 64),
-                (256, 0, 64, 64),
-                (320, 0, 64, 64),
-                (384, 0, 64, 64),
-                (448, 0, 64, 64),
-                (512, 0, 64, 64),
-                (576, 0, 64, 64),
-                (640, 0, 64, 64),
-                (704, 0, 64, 64),
-                (768, 0, 64, 64),
-                (832, 0, 64, 64),
-                (896, 0, 64, 64),
-                (960, 0, 64, 64),
-                (1024, 0, 64, 64),
-                (1088, 0, 64, 64),
-                (1152, 0, 64, 64),
-                (1216, 0, 64, 64),
-                (1280, 0, 64, 64),
-                (1344, 0, 64, 64),
-                (1408, 0, 64, 64),
-                (1472, 0, 64, 64),
-                (1536, 0, 64, 64)
-            ]
-        )
+        sprite_sheet_idle = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Capivara Sprites/capivara_tatica_parada.png'), 64)
+        sprite_sheet_run = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Capivara Sprites/capivara_tatica_andando.png'), 64)
+        sprite_sheet_jump = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Capivara Sprites/capivara_tatica_pulando.png'), 64)
+        sprite_sheet_death = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Capivara Sprites/capivara_tatica_morrendo.png'), 64)
 
         self.sprites_sheets = {
             'IDLE': (sprite_sheet_idle, 0.15),
@@ -373,40 +307,11 @@ class CapivaraIsa(Personagem):
 
 # ============================= RATO =============================
 class Rato(Personagem):
-    def __init__(self, pos: tuple, life: int, face_right: bool, limites: tuple, screen, sprite_group_personagem, sprite_group_projeteis, sprite_group_superficie) -> None:
+    def __init__(self, pos: tuple, life: int, face_right: bool, limites: tuple, screen: pygame.Surface, sprite_group_personagem: pygame.sprite.GroupSingle, sprite_group_projeteis: pygame.sprite.Group, sprite_group_superficie: pygame.sprite.Group) -> None:
         super().__init__(pos, life, face_right) # Oxi?
-        sprite_sheet_run = SpriteSheet(
-            os.path.join(DIRETORIO_IMAGENS, 'Rato Sprites/rato_andando.png'),
-            [
-                (0, 0, 64, 64),
-                (64, 0, 64, 64),
-                (128, 0, 64, 64),
-                (192, 0, 64, 64),
-                (256, 0, 64, 64),
-                (320, 0, 64, 64),
-                (384, 0, 64, 64),
-                (448, 0, 64, 64)
-            ]
-        )
-        sprite_sheet_attack = SpriteSheet(
-            os.path.join(DIRETORIO_IMAGENS, 'Rato Sprites/rato_atirando.png'),
-            [
-                (0, 0, 64, 64),
-                (64, 0, 64, 64)
-            ]
-        )
-        sprite_sheet_death = SpriteSheet(
-            os.path.join(DIRETORIO_IMAGENS, 'Rato Sprites/rato_morrendo.png'),
-            [
-                (0, 0, 64, 64),
-                (64, 0, 64, 64),
-                (128, 0, 64, 64),
-                (192, 0, 64, 64),
-                (256, 0, 64, 64),
-                (320, 0, 64, 64),
-                (384, 0, 64, 64)
-            ]
-        )
+        sprite_sheet_run = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Rato Sprites/rato_andando.png'), 64)
+        sprite_sheet_attack = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Rato Sprites/rato_atirando.png'), 64)
+        sprite_sheet_death = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Rato Sprites/rato_morrendo.png'), 64)
 
         self.sprites_sheets = {
             'RUN': (sprite_sheet_run, 0.25),
@@ -537,7 +442,7 @@ class Rato(Personagem):
 
 # ============================= BALA =============================
 class Bala(Projeteis):
-    def __init__(self, pos: tuple, velocidade: int, dano: int, size: tuple, sprite_group_inimigos) -> None:
+    def __init__(self, pos: tuple, velocidade: int, dano: int, size: tuple, sprite_group_inimigos: pygame.sprite.Group) -> None:
         Projeteis.__init__(self, dano)
         self.image = pygame.Surface(size) # Tamanho temporário
         self.image.fill((255, 122, 0))
