@@ -1,12 +1,14 @@
 import os
 
 
-LARGURA, ALTURA = 900, 600
+LARGURA, ALTURA = 960, 640
 FPS = 60
 GRAVIDADE = 0.7
 
-DIRETORIO_PRINCIPAL = os.path.dirname(__file__)
-DIRETORIO_IMAGENS = os.path.join(DIRETORIO_PRINCIPAL, 'Images')
+# Usando o método `replace` para funcionar no Linux
+DIRETORIO_PRINCIPAL = os.path.dirname(__file__).replace('\\', '/')
+DIRETORIO_IMAGENS = os.path.join(DIRETORIO_PRINCIPAL, 'Images').replace('\\', '/')
+DIRETORIO_MAPAS = os.path.join(DIRETORIO_PRINCIPAL, 'Mapas').replace('\\', '/')
 
 VELOCIDADE = 4
-TILE_SIZE = 50
+TILE_SIZE = 64

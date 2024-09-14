@@ -5,7 +5,7 @@ from lib.classes import *
 
 
 class Game:
-    def __init__(self) -> None:
+    def __init__(self):
         pygame.init()
         self.screen_config()
         self.loop()
@@ -22,7 +22,8 @@ class Game:
             self.screen.fill((235, 235, 235)) # Temporário
             self.clock.tick(FPS)
             self.eventos()
-            level.run()
+            if not level.fim:
+                level.run()
             pygame.display.flip()
 
     def eventos(self) -> None:
