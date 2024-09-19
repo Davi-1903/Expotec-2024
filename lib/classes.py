@@ -7,57 +7,34 @@ from lib.constantes import *
 class Level:
     def __init__(self, display_surface: pygame.Surface):
         self.screen = display_surface
+        mapa_idx = 1 # Valor que será passado pelo usuário
+        self.carregar_level(mapa_idx)
+    
+    def carregar_level(self, mapa_idx: int) -> None:
         self.scroll = 0
         self.sprite_group_config()
-        self.mapa_idx = 1 # Valor que será passado pelo usuário
-        self.mapa_config()
-        self.add_personagens()
+        self.mapa = Mapa(mapa_idx)
+        self.add_personagens(mapa_idx)
         self.fim = False
     
-    def add_personagens(self) -> None:
-        with open(os.path.join(DIRETORIO_MAPAS, f'Mapa {self.mapa_idx}/Data/personagens_pos.json').replace('\\', '/')) as arquivo:
+    def add_personagens(self, mapa_idx: int) -> None:
+        with open(os.path.join(DIRETORIO_MAPAS, f'Mapa {mapa_idx}/Data/personagens_pos.json').replace('\\', '/')) as arquivo:
             personagens_data = json.load(arquivo)
         for personagem in personagens_data:
             if personagem['personagem'] == 'capivara':
-                self.personagem = CapivaraIsa(personagem['inicio'], personagem['life'], personagem['faceRight'], self.screen, self.sprite_group_inimigos, self.sprite_group_projeteis, self.sprite_group_superficie)
+                self.personagem = CapivaraIsa(personagem['inicio'], personagem['life'], personagem['faceRight'], self.screen, self.sprite_group_inimigos, self.sprite_group_projeteis, self.mapa.sprite_group_superficie)
                 self.sprite_group_personagem.add(self.personagem)
             if personagem['personagem'] == 'rato':
-                self.sprite_group_inimigos.add(Rato(personagem['inicio'], personagem['life'], personagem['faceRight'], personagem['limites'], self.screen, self.sprite_group_personagem, self.sprite_group_projeteis, self.sprite_group_superficie))
+                self.sprite_group_inimigos.add(Rato(personagem['inicio'], personagem['life'], personagem['faceRight'], personagem['limites'], self.screen, self.sprite_group_personagem, self.sprite_group_projeteis, self.mapa.sprite_group_superficie))
 
     def sprite_group_config(self) -> None:
-        self.sprite_group_superficie = pygame.sprite.Group()
         self.sprite_group_personagem = pygame.sprite.GroupSingle()
         self.sprite_group_inimigos = pygame.sprite.Group()
         self.sprite_group_projeteis = pygame.sprite.Group()
 
-    def mapa_config(self) -> None:
-        self.mapa_data = load_pygame(os.path.join(DIRETORIO_MAPAS, f'Mapa {self.mapa_idx}/Data/tmx/Mapa.tmx').replace('\\', '/'))
-        self.background = pygame.image.load(os.path.join(DIRETORIO_MAPAS, f'Mapa {self.mapa_idx}/Assets/Backgrounds/background.jpg').replace('\\', '/'))
-        layers = self.mapa_data.get_layer_by_name('Collision Block')
-        for x, y, surface in layers.tiles():
-            self.sprite_group_superficie.add(Tile((x * TILE_SIZE, y * TILE_SIZE), surface))
-        self.backgrounds = []
-        vezes = self.mapa_data.width * TILE_SIZE // self.background.get_width()
-        if vezes < 1:
-            vezes = 1
-        for n in range(vezes):
-            self.backgrounds.append(self.background)
-    
-    def draw_mapa(self) -> None:
-        for layer in self.mapa_data.layers:
-            if layer.name != 'Collision Block' and hasattr(layer, 'data'):
-                for x, y, surface in layer.tiles():
-                    self.screen.blit(surface, (x * TILE_SIZE + self.scroll, y * TILE_SIZE))
-        for objetos in self.mapa_data.objects:
-            self.screen.blit(pygame.transform.rotate(objetos.image, -objetos.rotation), (objetos.x + self.scroll, objetos.y))
-    
-    def draw_background(self) -> None:
-        for idx, background in enumerate(self.backgrounds):
-            self.screen.blit(background, (idx * background.get_width() + self.scroll // 4, 0))
-
     def update(self) -> None:
         self.scroll_antes = self.scroll
-        self.mover_cenario()
+        self.mapa.mover_cenario(self.scroll)
         self.sprites_update()
         self.deslocamento_cenario()
         self.corrigir_inimigo_pos()
@@ -65,8 +42,8 @@ class Level:
             self.fim = True
     
     def sprites_update(self) -> None:
-        self.draw_background()
-        self.draw_mapa()
+        self.mapa.draw_background(self.screen, self.scroll)
+        self.mapa.draw_mapa(self.screen, self.scroll)
         self.sprite_group_personagem.update()
         self.sprite_group_inimigos.update()
         self.sprite_group_projeteis.update()
@@ -83,17 +60,13 @@ class Level:
             self.scroll = 0
             if self.personagem.deslocamento_x != 0 and self.personagem.rect.left + 14 > 0:
                 self.personagem.mover()
-        if self.scroll < -self.mapa_data.width * TILE_SIZE // 2:
-            self.scroll = -self.mapa_data.width * TILE_SIZE // 2
+        if self.scroll < -self.mapa.width * TILE_SIZE // 2:
+            self.scroll = -self.mapa.width * TILE_SIZE // 2
             if self.personagem.deslocamento_x != 0 and self.personagem.rect.right - 10 < LARGURA:
                 self.personagem.mover()
     
-    def mover_cenario(self) -> None:
-        for tile in self.sprite_group_superficie:
-            tile.mover(self.scroll)
-    
     def draw(self) -> None:
-        self.sprite_group_superficie.draw(self.screen)
+        self.mapa.sprite_group_superficie.draw(self.screen) # Hum...
         self.sprite_group_personagem.draw(self.screen)
         self.sprite_group_inimigos.draw(self.screen)
         self.sprite_group_projeteis.draw(self.screen)
@@ -101,6 +74,49 @@ class Level:
     def run(self) -> None:
         self.update()
         self.draw()
+
+
+# ============================= MAPA =============================
+class Mapa:
+    def __init__(self, mapa_idx: int):
+        self.carregar_mapa(mapa_idx)
+
+    def carregar_mapa(self, mapa_idx: int) -> None:
+        self.mapa = load_pygame(os.path.join(DIRETORIO_MAPAS, f'Mapa {mapa_idx}/Data/tmx/Mapa.tmx').replace('\\', '/'))
+        self.width, self.height = self.mapa.width, self.mapa.height
+        self.sprite_group_superficie = pygame.sprite.Group()
+        self.criar_tiles()
+        self.background_config(mapa_idx)
+    
+    def criar_tiles(self) -> None:
+        layers = self.mapa.get_layer_by_name('Collision Block')
+        for x, y, surface in layers.tiles():
+            self.sprite_group_superficie.add(Tile((x * TILE_SIZE, y * TILE_SIZE), surface))
+    
+    def background_config(self, mapa_idx: int) -> None:
+        self.background = pygame.image.load(os.path.join(DIRETORIO_MAPAS, f'Mapa {mapa_idx}/Assets/Backgrounds/background.jpg'.replace('\\', '/'))) # KKKKKKKKKKKKKKKKKKKK
+        self.backgrounds = []
+        vezes = self.width * TILE_SIZE // self.background.get_width()
+        if vezes < 1:
+            vezes = 1
+        for n in range(vezes):
+            self.backgrounds.append(self.background)
+
+    def draw_mapa(self, screen: pygame.Surface, scroll: int) -> None:
+        for layer in self.mapa.layers:
+            if layer.name != 'Collision Block' and hasattr(layer, 'data'):
+                for x, y, surface in layer.tiles():
+                    screen.blit(surface, (x * TILE_SIZE + scroll, y * TILE_SIZE))
+        for objetos in self.mapa.objects:
+            screen.blit(pygame.transform.rotate(objetos.image, -objetos.rotation), (objetos.x + scroll, objetos.y))
+    
+    def draw_background(self, screen: pygame.Surface, scroll: int) -> None:
+        for idx, background in enumerate(self.backgrounds):
+            screen.blit(background, (idx * background.get_width() + scroll // 4, 0))
+    
+    def mover_cenario(self, scroll: int) -> None:
+        for tile in self.sprite_group_superficie:
+            tile.mover(scroll)
 
 
 # ============================= TILE =============================
