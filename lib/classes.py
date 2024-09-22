@@ -1,6 +1,7 @@
 import pygame, json
 from pytmx.util_pygame import load_pygame
 from lib.constantes import *
+from math import ceil
 
 
 # ============================= LEVEL =============================
@@ -125,6 +126,7 @@ class Tile(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = surface
         self.rect = self.image.get_rect(topleft = pos)
+        self.rect_colision = self.rect
         self.x_origin = pos[0]
     
     def mover(self, scroll: int) -> None:
@@ -191,7 +193,7 @@ class SpriteSheet:
 # ============================= CAPIVARA =============================
 class CapivaraIsa(Personagem):
     def __init__(self, pos: tuple, life: int, face_right: bool, screen: pygame.Surface, sprite_group_inimigos: pygame.sprite.Group, sprite_group_projeteis: pygame.sprite.Group, sprite_group_superficie: pygame.sprite.Group):
-        Personagem.__init__(self, pos, life, face_right) # Só um teste...
+        Personagem.__init__(self, pos, life, face_right)
         sprite_sheet_idle = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Capivara Sprites/capivara_tatica_parada.png').replace('\\', '/'), 64)
         sprite_sheet_run = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Capivara Sprites/capivara_tatica_andando.png').replace('\\', '/'), 64)
         sprite_sheet_jump = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Capivara Sprites/capivara_tatica_pulando.png').replace('\\', '/'), 64)
@@ -215,7 +217,7 @@ class CapivaraIsa(Personagem):
     
     def update(self) -> None:
         estado_antes = self.estado
-        self.deslocamento_x = 0
+        self.deslocamento_x = self.deslocamento_y = 0
         self.gravidade()
         if self.life > 0: # Talvez usar o `life_show`
             self.draw_life_bar(self.screen, 72)
@@ -231,6 +233,7 @@ class CapivaraIsa(Personagem):
             # PARAR A CAPIVARA ==============================================
             if self.rect.left + 14 >= 225 and not self.face_right or self.rect.right - 10 <= 675 and self.face_right:
                 self.mover()
+            self.y_pos += self.deslocamento_y
         elif self.image_idx is not None:
             self.estado = 'DEATH'
             if estado_antes != self.estado:
@@ -243,7 +246,7 @@ class CapivaraIsa(Personagem):
             self.colisao()
     
     def pular(self) -> None:
-        if (self.keys[pygame.K_w] or self.keys[pygame.K_UP] or self.keys[pygame.K_SPACE]) and not self.pulando:
+        if (self.keys[pygame.K_w] or self.keys[pygame.K_UP] or self.keys[pygame.K_SPACE]) and not self.pulando and self.colisao()[1]:
             self.estado = 'JUMP'
             self.velocidade_y = -15
             self.pulando = True
@@ -253,6 +256,7 @@ class CapivaraIsa(Personagem):
             self.image = self.sprites_atual[int(self.image_idx)]
             self.mask = pygame.mask.from_surface(self.image)
             self.rect = self.image.get_rect(topleft = (self.x_pos, self.y_pos))
+            self.rect_colision = pygame.Rect(self.x_pos + 10, self.y_pos + 25, 75, 50)
     
     def trocar_estado(self) -> None:
         self.keys = pygame.key.get_pressed()
@@ -277,13 +281,16 @@ class CapivaraIsa(Personagem):
     def atirar(self) -> None:
         if self.keys[pygame.K_f] and self.balas_cadencia == 0:
             self.balas_cadencia = 5
-            self.sprite_group_projeteis.add(Bala((self.x_pos + 60, self.y_pos + 63), 28 if self.face_right else -28, 10, (12, 6),  [self.sprite_group_inimigos, self.sprite_group_superficie]))
+            if self.face_right:
+                self.sprite_group_projeteis.add(Bala((self.x_pos + 60, self.y_pos + 63), 28, 10, (12, 6),  [self.sprite_group_inimigos, self.sprite_group_superficie]))
+            else:
+                self.sprite_group_projeteis.add(Bala((self.x_pos + 40, self.y_pos + 63), -28, 10, (12, 6),  [self.sprite_group_inimigos, self.sprite_group_superficie]))
         if self.balas_cadencia > 0:
             self.balas_cadencia -= 1
     
     def gravidade(self) -> None:
         self.velocidade_y += GRAVIDADE
-        self.y_pos += self.velocidade_y
+        self.deslocamento_y = self.velocidade_y
     
     def mover(self) -> None:
         self.x_pos += self.deslocamento_x
@@ -297,35 +304,28 @@ class CapivaraIsa(Personagem):
         if self.estado == 'JUMP' and self.velocidade_y > 0 and self.image_idx >= 8:
             self.image_idx = 5
     
-    def colisao(self) -> None:
-        # COLISÃO COM BLOCOS ===================================================
-        for tile in self.sprite_group_superficie:
-            if tile.rect.colliderect(self.x_pos + 10.5 + self.deslocamento_x, self.y_pos + 21.25 + self.velocidade_y, 76.5, 54.5):
-                self.deslocamento_x = 0
-            if tile.rect.colliderect(self.x_pos + 10.5, self.y_pos + 21.75 + self.velocidade_y, 76.5, 64.5):
-                if self.velocidade_y > 0:
-                    self.y_pos = tile.rect.top - 76.5
-                    self.pulando = False
-                self.velocidade_y = 0
-        # COLISÃO COM INIMIGOS =================================================
-        for inimigo in self.sprite_group_inimigos: # Ajeitar, está meio bugado
-            if inimigo.rect.colliderect(self.x_pos + 10.5, self.y_pos + 21.25 + self.velocidade_y, 76.5, 54.5):
-                self.y_pos = self.rect.top - 1
-                self.pulando = False
-                self.velocidade_y = 0
-            if inimigo.rect.colliderect(self.rect):
-                if self.rect.centerx - inimigo.rect.centerx < 0 and self.face_right:
+    def colisao(self) -> list[bool]:
+        colisions = [False, False]
+        for group in [self.sprite_group_superficie, self.sprite_group_inimigos]:
+            for sprite in group:
+                if sprite.rect_colision.colliderect(self.rect_colision.x + self.deslocamento_x, self.rect_colision.y, self.rect_colision.width, self.rect_colision.height):
                     self.deslocamento_x = 0
-                elif self.rect.centerx - inimigo.rect.centerx < 0 and not self.face_right:
-                    self.deslocamento_x = inimigo.rect.left - 96.5 - self.x_pos
-                elif self.rect.centerx - inimigo.rect.centerx > 0 and not self.face_right:
-                    self.deslocamento_x = 0
+                    colisions[0] = True
+                elif sprite.rect_colision.colliderect(self.rect_colision.x, self.rect_colision.y + ceil(self.velocidade_y), self.rect_colision.width, self.rect_colision.height):
+                    if self.velocidade_y > 0:
+                        self.deslocamento_y = sprite.rect_colision.top - self.rect_colision.bottom
+                        self.pulando = False
+                    if self.velocidade_y < 0:
+                        self.deslocamento_y = self.rect_colision.top - sprite.rect_colision.bottom
+                    self.velocidade_y = 0
+                    colisions[1] = True
+        return colisions
 
 
 # ============================= RATO =============================
 class Rato(Personagem):
     def __init__(self, pos: tuple, life: int, face_right: bool, limites: tuple, screen: pygame.Surface, sprite_group_personagem: pygame.sprite.GroupSingle, sprite_group_projeteis: pygame.sprite.Group, sprite_group_superficie: pygame.sprite.Group):
-        super().__init__(pos, life, face_right) # Oxi?
+        Personagem.__init__(self, pos, life, face_right)
         sprite_sheet_run = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Rato Sprites/rato_andando.png').replace('\\', '/'), 64)
         sprite_sheet_attack = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Rato Sprites/rato_atirando.png').replace('\\', '/'), 64)
         sprite_sheet_death = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Rato Sprites/rato_morrendo.png').replace('\\', '/'), 64)
@@ -361,8 +361,8 @@ class Rato(Personagem):
             self.exibicao_config()
             self.alterar_sentido()
             self.atirar()
-            self.mover()
             self.colisao()
+            self.mover()
         elif self.image_idx is not None:
             self.estado = 'DEATH'
             self.select_animation()
@@ -389,6 +389,7 @@ class Rato(Personagem):
             self.image = self.sprites_atual[int(self.image_idx)]
             self.mask = pygame.mask.from_surface(self.image)
             self.rect = self.image.get_rect(topleft = (self.x_pos, self.y_pos))
+            self.rect_colision = pygame.Rect(self.x_pos + 5, self.y_pos + 30, 90, 40)
     
     def select_animation(self) -> None:
         sprite_sheet = self.sprites_sheets[self.estado][0]
@@ -397,7 +398,7 @@ class Rato(Personagem):
     
     def gravidade(self) -> None:
         self.velocidade_y += GRAVIDADE
-        self.y_pos += self.velocidade_y
+        self.deslocamento_y = self.velocidade_y
     
     def animar(self) -> None:
         self.image_idx += self.speed_animation
@@ -406,20 +407,19 @@ class Rato(Personagem):
     
     def mover(self) -> None:
         self.x_pos += self.deslocamento_x
+        self.y_pos += self.deslocamento_y
     
-    def colisao(self) -> None: # Agora aqui tem gambiarra...
-        for tile in self.sprite_group_superficie:
-            if tile.rect.colliderect(self.x_pos + 10.5, self.y_pos + 21.25, 76.5, 10):
-                self.deslocamento_x = 0
-            if tile.rect.colliderect(self.x_pos + 10.5, self.y_pos + 21.75, 76.5, 64.5):
-                if self.velocidade_y > 0:
-                    self.y_pos = tile.rect.top - 76.5
-                    self.pulando = False
-                self.velocidade_y = 0
+    def colisao(self) -> None:
+        for group in [self.sprite_group_superficie, self.sprite_group_personagem]:
+            for sprite in group:
+                if sprite.rect_colision.colliderect(self.rect_colision.x, self.rect_colision.y + ceil(self.velocidade_y), self.rect_colision.width, self.rect_colision.height):
+                    if self.velocidade_y > 0:
+                        self.deslocamento_y = sprite.rect_colision.top - self.rect_colision.bottom
+                    self.velocidade_y = 0
 
     def atirar(self) -> None:
         for personagem in self.sprite_group_personagem:
-            if personagem.y_pos <= self.rect.centery <= personagem.y_pos + 65 and (-250 < personagem.rect.centerx - self.rect.centerx < 0 and not self.face_right or 250 > personagem.rect.centerx - self.rect.centerx > 0 and self.face_right):
+            if personagem.y_pos <= self.rect.centery <= personagem.y_pos + 65 and (-250 < personagem.rect.centerx - self.rect.centerx < 0 and not self.face_right or 250 > personagem.rect.centerx - self.rect.centerx > 0 and self.face_right) and personagem.life > 0:
                 self.deslocamento_x = 0
                 self.estado = 'ATTACK'
             else:
@@ -435,7 +435,7 @@ class Rato(Personagem):
 class Bala(Projeteis):
     def __init__(self, pos: tuple, velocidade: int, dano: int, size: tuple, sprite_group_inimigos: pygame.sprite.Group) -> None:
         Projeteis.__init__(self, dano)
-        self.image = pygame.Surface(size) # Tamanho temporário
+        self.image = pygame.Surface(size)
         self.image.fill((255, 122, 0))
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect(center=pos)

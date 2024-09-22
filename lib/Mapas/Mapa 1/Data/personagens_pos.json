@@ -28,7 +28,7 @@
     },
     {
         "personagem": "rato",
-        "inicio": [1500, 200],
+        "inicio": [1500, 100],
         "life": 100,
         "faceRight": true,
         "limites": [1500, 1900]

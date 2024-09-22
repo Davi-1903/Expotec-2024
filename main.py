@@ -12,18 +12,17 @@ class Game:
     
     def screen_config(self) -> None:
         self.screen = pygame.display.set_mode((LARGURA, ALTURA))
-        pygame.display.set_caption('ADGP')
+        pygame.display.set_caption('ADGP 1.0')
         self.clock = pygame.time.Clock()
     
     def loop(self) -> None:
         level = Level(self.screen)
 
         while True:
-            self.screen.fill((235, 235, 235)) # Temporário
+            self.screen.fill((235, 235, 235))
             self.clock.tick(FPS)
             self.eventos()
-            if not level.fim:
-                level.run()
+            level.run()
             pygame.display.flip()
 
     def eventos(self) -> None:
