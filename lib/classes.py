@@ -139,7 +139,7 @@ class Mapa:
         Parâmetros:
             mapa_idx -> Valor que indica qual mapa o usuário vai jogar
         '''
-        self.background = pygame.image.load(os.path.join(DIRETORIO_MAPAS, f'Mapa {mapa_idx}/Assets/Backgrounds/background.jpg'.replace('\\', '/')))
+        self.background = pygame.image.load(os.path.join(DIRETORIO_MAPAS, f'Mapa {mapa_idx}/Assets/Backgrounds/Background.jpg').replace('\\', '/'))
         self.backgrounds = []
         vezes = self.width * TILE_SIZE // self.background.get_width()
         if vezes < 1:
