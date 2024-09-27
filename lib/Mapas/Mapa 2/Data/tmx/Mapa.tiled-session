@@ -1,0 +1,48 @@
+{
+    "activeFile": "Map2_Pt2.tmx",
+    "expandedProjectPaths": [
+    ],
+    "file.lastUsedOpenFilter": "Todos os Ficheiros (*)",
+    "fileStates": {
+        "C:/Users/João Vale/Pictures/Estudos Tecnicos/Projeto ADGP/MapData/Data/tsx/Floor and Wall.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/João Vale/Pictures/Estudos Tecnicos/Projeto ADGP/MapData/Data/tsx/Wall.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/João Vale/Pictures/Estudos Tecnicos/Projeto ADGP/MapData2/Data/tsx/Boxes.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/João Vale/Pictures/Estudos Tecnicos/Projeto ADGP/MapData2/Data/tsx/FloorTile.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/João Vale/Pictures/Estudos Tecnicos/Projeto ADGP/MapData2/Data/tsx/Wall2.tsx": {
+            "scaleInDock": 1
+        },
+        "Map2_Pt1.tmx": {
+            "scale": 0.8055208333333332,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 480.43450148713316,
+                "y": 319.66895124789863
+            }
+        },
+        "Map2_Pt2.tmx": {
+            "scale": 0.8055208333333332,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 480.43450148713316,
+                "y": 319.66895124789863
+            }
+        }
+    },
+    "openFiles": [
+        "Map2_Pt1.tmx",
+        "Map2_Pt2.tmx"
+    ],
+    "project": "Map2_Pt2.tiled-project",
+    "recentFiles": [
+        "Map2_Pt1.tmx",
+        "Map2_Pt2.tmx"
+    ]
+}

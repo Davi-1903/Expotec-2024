@@ -2,6 +2,83 @@ import pygame, json
 from pytmx.util_pygame import load_pygame
 from lib.constantes import *
 from math import ceil
+from typing import Callable
+
+# ============================= FUNCIONALIDADES =============================
+class Funcionalidades:
+    '''Todas as funcionalidades do jogo.'''
+    def play(self) -> None:
+        '''Inicia o jogo.'''
+        self.estado = 'JOGO'
+        self.game_music.play(-1)
+        self.menu_music.stop()
+    
+    def to_controls(self) -> None:
+        '''Mostra as instruções de controle do jogo.'''
+        self.estado = 'CONTROLES'
+    
+    def to_menu(self) -> None:
+        '''Muda o estado do jogo para menu.'''
+        self.estado = 'MENU'
+        self.game_music.stop()
+        if self.menu_music.get_num_channels() == 0:
+            self.menu_music.play(-1)
+    
+    def to_next_level(self) -> None:
+        '''Carrega o prómixo nível.'''
+        self.mapa += 1
+        self.level.carregar_level(self.mapa)
+    
+    def quit(self) -> None:
+        '''Fecha o jogo.'''
+        pygame.quit()
+        exit()
+
+
+# ============================= BOTÃO =============================
+class Button:
+    '''Representa um botão no jogo.
+    
+    Atributos:
+        img_normal -> A image do botão em seu estado normal
+        img_hover -> A image do botão quando o mouse está sobre ele
+        image -> A image que será exibida
+        rect -> Retângulo para a exibição da imagem
+        function -> Função que será executa
+        click -> Diz se o botão foi clicado
+    '''
+    def __init__(self, pos: tuple, img_normal: str, img_hover: str, function: Callable):
+        '''Método construtor.
+
+        Parâmetros:
+            pos -> Posição do botão.
+            img_normal -> Imagem do botão em seu estado normal
+            img_hover -> Imagem do botão quando o mouse está sobre ele
+            function -> Função que será executada quando o botão for clicado
+        '''
+        self.img_normal = pygame.image.load(img_normal).convert_alpha()
+        self.img_hover = pygame.image.load(img_hover).convert_alpha()
+        self.image = self.img_normal
+        self.rect = self.image.get_rect(center=pos)
+        self.function = function
+        self.click = False
+    
+    def draw(self, screen: pygame.Surface) -> None:
+        '''Desenha o botão na tela.
+
+        Parâmetros:
+            screen -> Tela do jogo
+        '''
+        self.image = self.img_normal
+        if self.rect.collidepoint(pygame.mouse.get_pos()):
+            self.image = self.img_hover
+            if pygame.mouse.get_pressed()[0]:
+                if not self.click:
+                    self.function()
+                self.click = True
+            else:
+                self.click = False
+        screen.blit(self.image, self.rect)
 
 
 # ============================= LEVEL =============================
@@ -11,16 +88,16 @@ class Level:
     Atributos:
         self.screen -> Tela do jogo
     '''
-    def __init__(self, display_surface: pygame.Surface):
+    def __init__(self, display_surface: pygame.Surface, mapa_idx: int):
         '''Método construtor.
 
         Parâmetros:
             display_surface -> Tela do Jogo
+            mapa_idx -> Nível
         '''
         self.screen = display_surface
-        mapa_idx = 1 # Valor que será passado pelo usuário
         self.carregar_level(mapa_idx)
-    
+
     def carregar_level(self, mapa_idx: int) -> None:
         '''Carrega o mapa que será jogado.
         
@@ -212,6 +289,47 @@ class Tile(pygame.sprite.Sprite):
         self.rect.x = self.x_origin + scroll
 
 
+# ============================= SPRITE SHEET =============================
+class SpriteSheet:
+    '''Modela o conjunto de sprites.
+    
+    Atributos:
+        width -> Largura da sprite sheet
+        height -> Altura da sprite sheet
+        self.sprite -> Conjunto de sprites
+        self.sprite_flipped -> Conjunto de sprite virado ao contrário
+    '''
+    def __init__(self, sprite_sheet: str, size: int):
+        '''Método construtor.
+        
+        Parâmetros:
+            sprite_sheet -> Conjunto de sprites
+            size -> Tamanho da sprite
+        '''
+        sprite_sheet = pygame.image.load(sprite_sheet).convert_alpha()
+        width = sprite_sheet.get_width()
+        height = sprite_sheet.get_height()
+        self.sprite = []
+        self.sprite_flipped = []
+        for l in range(0, height, size):
+            for c in range(0, width, size):
+                sprite = sprite_sheet.subsurface((c, l, size, size))
+                sprite = pygame.transform.scale(sprite, (96, 96)) # Temporário
+                self.sprite.append(sprite)
+                sprite = pygame.transform.flip(sprite, True, False)
+                self.sprite_flipped.append(sprite)
+    
+    def get_sprites(self, flip: bool = False) -> list:
+        '''Pega o conjunto de sprites de acordo com a orientação.
+
+        Parâmetros:
+            flip -> Se False modela o cojunto de sprites virado para direita. Se True modela o conjunto de sprites virado para esquerda
+        
+        Retorna, se o flip for false, o cojunto de sprites virado para direita. Se o flip for True, o conjunto de sprites será virado para esquerda
+        '''
+        return self.sprite_flipped if flip else self.sprite
+    
+
 # ============================= PERSONAGEM =============================
 class Personagem(pygame.sprite.Sprite):
     '''Modela o personagens do jogo.
@@ -290,47 +408,6 @@ class Projeteis(pygame.sprite.Sprite):
         return False
 
 
-# ============================= SPRITE SHEET =============================
-class SpriteSheet:
-    '''Modela o conjunto de sprites.
-    
-    Atributos:
-        width -> Largura da sprite sheet
-        height -> Altura da sprite sheet
-        self.sprite -> Conjunto de sprites
-        self.sprite_flipped -> Conjunto de sprite virado ao contrário
-    '''
-    def __init__(self, sprite_sheet: str, size: int):
-        '''Método construtor.
-        
-        Parâmetros:
-            sprite_sheet -> Conjunto de sprites
-            size -> Tamanho da sprite
-        '''
-        sprite_sheet = pygame.image.load(sprite_sheet).convert_alpha()
-        width = sprite_sheet.get_width()
-        height = sprite_sheet.get_height()
-        self.sprite = []
-        self.sprite_flipped = []
-        for l in range(0, height, size):
-            for c in range(0, width, size):
-                sprite = sprite_sheet.subsurface((c, l, size, size))
-                sprite = pygame.transform.scale(sprite, (96, 96)) # Temporário
-                self.sprite.append(sprite)
-                sprite = pygame.transform.flip(sprite, True, False)
-                self.sprite_flipped.append(sprite)
-    
-    def get_sprites(self, flip: bool = False) -> list:
-        '''Pega o conjunto de sprites de acordo com a orientação.
-
-        Parâmetros:
-            flip -> Se False modela o cojunto de sprites virado para direita. Se True modela o conjunto de sprites virado para esquerda
-        
-        Retorna, se o flip for false, o cojunto de sprites virado para direita. Se o flip for True, o conjunto de sprites será virado para esquerda
-        '''
-        return self.sprite_flipped if flip else self.sprite
-
-
 # ============================= CAPIVARA =============================
 class CapivaraIsa(Personagem):
     '''Representa o personagem principal herdando os atributos e métodos da classe Personagem.
@@ -351,6 +428,7 @@ class CapivaraIsa(Personagem):
         self.speed_animation -> velocidade de transição da sprite
         self.velocidade_y -> velocidade no eixo y
         self.pulando -> Se True roda os conjuntos de sprites pulando
+        self.shooting_music -> Som do tiro a laser
     '''
     def __init__(self, pos: tuple, life: int, face_right: bool, screen: pygame.Surface, sprite_group_inimigos: pygame.sprite.Group, sprite_group_projeteis: pygame.sprite.Group, sprite_group_superficie: pygame.sprite.Group):
         '''Método construtor.
@@ -385,6 +463,7 @@ class CapivaraIsa(Personagem):
         self.speed_animation = self.sprites_sheets[self.estado][1]
         self.velocidade_y = 0
         self.pulando = False
+        self.shooting_music = pygame.mixer.Sound(os.path.join(DIRETORIO_MUSICAS,"Sound Effects/Laser Gun Sound Effect.mp3").replace('\\', '/'))
     
     def update(self) -> None:
         '''Atualiza tudo relacionado a capivara.'''
@@ -462,6 +541,7 @@ class CapivaraIsa(Personagem):
                 self.sprite_group_projeteis.add(Bala((self.x_pos + 60, self.y_pos + 63), 28, 10, (12, 6),  [self.sprite_group_inimigos, self.sprite_group_superficie]))
             else:
                 self.sprite_group_projeteis.add(Bala((self.x_pos + 40, self.y_pos + 63), -28, 10, (12, 6),  [self.sprite_group_inimigos, self.sprite_group_superficie]))
+            self.shooting_music.play()
         if self.balas_cadencia > 0:
             self.balas_cadencia -= 1
     
@@ -526,6 +606,7 @@ class Rato(Personagem):
         self.distancia -> distancia no eixo x na qual o rato irá se movimentar
         self.velocidade_y -> velocidade no eixo y
         self.deslocamento_x -> O quanto será deslocado no eixo x
+        self.shooting_music -> Som do tiro a laser
     '''
     def __init__(self, pos: tuple, life: int, face_right: bool, limites: tuple, screen: pygame.Surface, sprite_group_personagem: pygame.sprite.GroupSingle, sprite_group_projeteis: pygame.sprite.Group, sprite_group_superficie: pygame.sprite.Group):
         '''Método construtor.
@@ -561,6 +642,7 @@ class Rato(Personagem):
         self.distancia = limites[1] - self.x_atual
         self.velocidade_y = 0
         self.deslocamento_x = 0
+        self.shooting_music = pygame.mixer.Sound(os.path.join(DIRETORIO_MUSICAS, 'Sound Effects/Laser Gun Sound Effect.mp3').replace('\\', '/'))
         self.select_animation()
         self.exibicao_config()
     
@@ -651,6 +733,7 @@ class Rato(Personagem):
         if self.estado == 'ATTACK' and self.balas_cadencia == 0:
             self.balas_cadencia = 10
             self.sprite_group_projeteis.add(Bala((self.x_pos + 50, self.y_pos + 25), 28 if self.face_right else -28, 5, (12, 6), [self.sprite_group_personagem, self.sprite_group_superficie]))
+            self.shooting_music.play()
         elif self.balas_cadencia > 0:
             self.balas_cadencia -= 1
 

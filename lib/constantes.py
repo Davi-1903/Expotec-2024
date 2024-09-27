@@ -9,6 +9,7 @@ GRAVIDADE = 0.7
 DIRETORIO_PRINCIPAL = os.path.dirname(__file__).replace('\\', '/')
 DIRETORIO_IMAGENS = os.path.join(DIRETORIO_PRINCIPAL, 'Images').replace('\\', '/')
 DIRETORIO_MAPAS = os.path.join(DIRETORIO_PRINCIPAL, 'Mapas').replace('\\', '/')
+DIRETORIO_MUSICAS = os.path.join(DIRETORIO_PRINCIPAL, 'Musics').replace('\\', '/')
 
 VELOCIDADE = 4
 TILE_SIZE = 64
