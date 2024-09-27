@@ -46,7 +46,7 @@ class Game(Funcionalidades):
     
     def loop(self) -> None:
         '''Deixa o jogo rodando continuamente e o atualiza constantemente.'''
-        self.mapa = 2
+        self.mapa = 1
         self.level = Level(self.screen, self.mapa)
         self.btn_next_level = Button((LARGURA // 2, ALTURA // 2 + 240), os.path.join(DIRETORIO_IMAGENS, 'Buttons/btn_next_level_normal.png').replace('\\', '/'), os.path.join(DIRETORIO_IMAGENS, 'Buttons/btn_next_level_hover.png').replace('\\', '/'), self.to_next_level)
         self.btn_menu_extenso_voltar = Button((LARGURA // 2, ALTURA // 2 + 240), os.path.join(DIRETORIO_IMAGENS, 'Buttons/btn_menu_extenso_normal.png').replace('\\', '/'), os.path.join(DIRETORIO_IMAGENS, 'Buttons/btn_menu_extenso_hover.png').replace('\\', '/'), self.to_menu)

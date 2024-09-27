@@ -157,15 +157,15 @@ class Level:
     
     def deslocamento_cenario(self) -> None:
         '''Move cenário em relação ao eixo x.'''
-        if self.personagem.rect.left + 14 < 225 and not self.personagem.face_right or self.personagem.rect.right - 10 > 675 and self.personagem.face_right:
+        if self.personagem.rect_colision.left < 225 and not self.personagem.face_right or self.personagem.rect_colision.right > 675 and self.personagem.face_right:
             self.scroll += -self.personagem.deslocamento_x
         if self.scroll > 0:
             self.scroll = 0
-            if self.personagem.deslocamento_x != 0 and self.personagem.rect.left + 14 > 0:
+            if self.personagem.deslocamento_x != 0 and self.personagem.rect_colision.left > 0:
                 self.personagem.mover()
-        if self.scroll < -self.mapa.width * TILE_SIZE // 2:
-            self.scroll = -self.mapa.width * TILE_SIZE // 2
-            if self.personagem.deslocamento_x != 0 and self.personagem.rect.right - 10 < LARGURA:
+        if self.scroll < -self.mapa.width * TILE_SIZE + LARGURA:
+            self.scroll = -self.mapa.width * TILE_SIZE + LARGURA
+            if self.personagem.deslocamento_x != 0 and self.personagem.rect_colision.right < LARGURA:
                 self.personagem.mover()
     
     def draw(self) -> None:
@@ -482,7 +482,7 @@ class CapivaraIsa(Personagem):
             self.exibicao_config()
             self.colisao()
             # PARAR A CAPIVARA ==============================================
-            if self.rect.left + 14 >= 225 and not self.face_right or self.rect.right - 10 <= 675 and self.face_right:
+            if self.rect_colision.left >= 225 and not self.face_right or self.rect_colision.right <= 675 and self.face_right:
                 self.mover()
             self.y_pos += self.deslocamento_y
         elif self.image_idx is not None:
