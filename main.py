@@ -62,6 +62,10 @@ class Game(Funcionalidades):
                         self.btn_next_level.draw(self.screen)
                     else:
                         self.btn_menu_extenso.draw(self.screen)
+                elif self.level.personagem.image_idx is None: # Gambiarra...
+                    self.btn_reset.draw(self.screen)
+                else:
+                    self.btn_pause.draw(self.screen)
     
     def loop(self) -> None:
         '''Deixa o jogo rodando continuamente e o atualiza constantemente.'''
@@ -69,6 +73,8 @@ class Game(Funcionalidades):
         self.level = Level(self.screen, self.mapa)
         self.btn_next_level = Button((LARGURA // 2, ALTURA // 2 + 240), os.path.join(DIRETORIO_IMAGENS, 'Buttons/btn_next_level_normal.png').replace('\\', '/'), os.path.join(DIRETORIO_IMAGENS, 'Buttons/btn_next_level_hover.png').replace('\\', '/'), self.to_next_level)
         self.btn_menu_extenso = Button((LARGURA // 2, ALTURA // 2 + 240), os.path.join(DIRETORIO_IMAGENS, 'Buttons/btn_menu_extenso_normal.png').replace('\\', '/'), os.path.join(DIRETORIO_IMAGENS, 'Buttons/btn_menu_extenso_hover.png').replace('\\', '/'), self.to_menu)
+        self.btn_pause = Button((40, 40), os.path.join(DIRETORIO_IMAGENS, 'Buttons/btn_pausa_normal.png').replace('\\', '/'), os.path.join(DIRETORIO_IMAGENS, 'Buttons/btn_pausa_hover.png').replace('\\', '/'), self.to_menu)
+        self.btn_reset = Button((LARGURA // 2, ALTURA // 2 + 240), os.path.join(DIRETORIO_IMAGENS, 'Buttons/btn_reset_normal.png').replace('\\', '/'), os.path.join(DIRETORIO_IMAGENS, 'Buttons/btn_reset_hover.png').replace('\\', '/'), self.resetar_level)
         self.game_music = pygame.mixer.Sound(os.path.join(DIRETORIO_MUSICAS,"Ost/Dracula's Castle.mp3").replace('\\', '/'))
         self.menu_music.play(-1) # -1 é para tocar em loop
 

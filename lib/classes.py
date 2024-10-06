@@ -4,6 +4,7 @@ from lib.constantes import *
 from math import ceil
 from typing import Callable
 
+
 # ============================= FUNCIONALIDADES =============================
 class Funcionalidades:
     '''Todas as funcionalidades do jogo.'''
@@ -27,6 +28,10 @@ class Funcionalidades:
     def to_next_level(self) -> None:
         '''Carrega o prómixo nível.'''
         self.mapa += 1
+        self.level.carregar_level(self.mapa)
+    
+    def resetar_level(self) -> None:
+        '''Reseta o nível que está.'''
         self.level.carregar_level(self.mapa)
     
     def quit(self) -> None:
