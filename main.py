@@ -39,7 +39,7 @@ class Game(Funcionalidades):
     
     def skins_config(self) -> None:
         '''Configurações da tela de selecionar skins.'''
-        self.skins_list = ['normal', 'gold']
+        self.skins_list = ['normal', 'gold', 'astronauta']
         self.skins_idx = 0
         self.skins_exibicao_idx = 0
         self.skin_selecionada = self.skins_list[self.skins_idx]
