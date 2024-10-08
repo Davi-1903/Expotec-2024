@@ -25,14 +25,41 @@ class Funcionalidades:
         if self.menu_music.get_num_channels() == 0:
             self.menu_music.play(-1)
     
+    def to_select_skins(self) -> None:
+        '''Muda o estado do jogo para seleção de skins.'''
+        self.estado = 'SKINS'
+    
+    def proxima_skin(self) -> None:
+        '''Muda para a próxima skin do jogador.'''
+        self.skins_idx += 1
+        if self.skins_idx >= len(self.skins_list):
+            self.skins_idx = 0
+        self.skins_exibicao = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, f'Skins/skins', f'{self.skins_list[self.skins_idx]}.png').replace('\\', '/'), 64)
+        self.skins_exibicao = self.skins_exibicao.get_sprites()
+    
+    def skin_anterior(self) -> None:
+        '''Muda para a skin anterior do jogador.'''
+        self.skins_idx -= 1
+        if self.skins_idx < 0:
+            self.skins_idx = len(self.skins_list) - 1
+        self.skins_exibicao = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, f'Skins/skins', f'{self.skins_list[self.skins_idx]}.png').replace('\\', '/'), 64)
+        self.skins_exibicao = self.skins_exibicao.get_sprites()
+    
+    def selecionar_skins(self) -> None:
+        '''Seleciona a skin do jogador.'''
+        self.skin_selecionada = self.skins_list[self.skins_idx]
+        self.level.personagem.set_skin(self.skin_selecionada)
+
     def to_next_level(self) -> None:
         '''Carrega o prómixo nível.'''
         self.mapa += 1
         self.level.carregar_level(self.mapa)
+        self.level.personagem.set_skin(self.skin_selecionada)
     
     def resetar_level(self) -> None:
         '''Reseta o nível que está.'''
         self.level.carregar_level(self.mapa)
+        self.level.personagem.set_skin(self.skin_selecionada)
     
     def quit(self) -> None:
         '''Fecha o jogo.'''
@@ -78,6 +105,7 @@ class Button:
         if self.rect.collidepoint(pygame.mouse.get_pos()):
             self.image = self.img_hover
             if pygame.mouse.get_pressed()[0]:
+                self.image = self.img_normal
                 if not self.click:
                     self.function()
                 self.click = True
@@ -448,16 +476,7 @@ class CapivaraIsa(Personagem):
             sprite_group_superficie -> Conjunto de sprites dos Tiles
         '''
         Personagem.__init__(self, pos, life, face_right)
-        sprite_sheet_idle = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Capivara Sprites/capivara_tatica_parada.png').replace('\\', '/'), 64)
-        sprite_sheet_run = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Capivara Sprites/capivara_tatica_andando.png').replace('\\', '/'), 64)
-        sprite_sheet_jump = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Capivara Sprites/capivara_tatica_pulando.png').replace('\\', '/'), 64)
-        sprite_sheet_death = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Capivara Sprites/capivara_tatica_morrendo.png').replace('\\', '/'), 64)
-        self.sprites_sheets = {
-            'IDLE': (sprite_sheet_idle, 0.15),
-            'RUN': (sprite_sheet_run, 0.25),
-            'JUMP': (sprite_sheet_jump, 0.25),
-            'DEATH': (sprite_sheet_death, 0.25)
-        }
+        self.set_skin('normal')
         self.screen = screen
         self.sprite_group_inimigos = sprite_group_inimigos
         self.sprite_group_projeteis = sprite_group_projeteis
@@ -469,6 +488,18 @@ class CapivaraIsa(Personagem):
         self.velocidade_y = 0
         self.pulando = False
         self.shooting_music = pygame.mixer.Sound(os.path.join(DIRETORIO_MUSICAS,"Sound Effects/Laser Gun Sound Effect.mp3").replace('\\', '/'))
+    
+    def set_skin(self, skin: str) -> None:
+        sprite_sheet_idle = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, f'Capivara Sprites/{skin}/capivara_tatica_parada.png').replace('\\', '/'), 64)
+        sprite_sheet_run = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, f'Capivara Sprites/{skin}/capivara_tatica_andando.png').replace('\\', '/'), 64)
+        sprite_sheet_jump = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, f'Capivara Sprites/{skin}/capivara_tatica_pulando.png').replace('\\', '/'), 64)
+        sprite_sheet_death = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, f'Capivara Sprites/{skin}/capivara_tatica_morrendo.png').replace('\\', '/'), 64)
+        self.sprites_sheets = {
+            'IDLE': (sprite_sheet_idle, 0.15),
+            'RUN': (sprite_sheet_run, 0.25),
+            'JUMP': (sprite_sheet_jump, 0.25),
+            'DEATH': (sprite_sheet_death, 0.25)
+        }
     
     def update(self) -> None:
         '''Atualiza tudo relacionado a capivara.'''

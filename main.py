@@ -13,6 +13,7 @@ class Game(Funcionalidades):
         self.screen_config()
         self.menu_config()
         self.controls_config()
+        self.skins_config()
         self.loop()
     
     def screen_config(self) -> None:
@@ -28,6 +29,7 @@ class Game(Funcionalidades):
         self.title = pygame.image.load(os.path.join(DIRETORIO_IMAGENS, 'Menu/logo_title.png').replace('\\', '/'))
         self.btn_play = Button((240, ALTURA // 2 + 80), os.path.join(DIRETORIO_IMAGENS, 'Menu/btn_play_normal.png').replace('\\', '/'), os.path.join(DIRETORIO_IMAGENS, 'Menu/btn_play_hover.png').replace('\\', '/'), self.play)
         self.btn_controls = Button((240, ALTURA // 2 + 160), os.path.join(DIRETORIO_IMAGENS, 'Menu/btn_controls_normal.png').replace('\\', '/'), os.path.join(DIRETORIO_IMAGENS, 'Menu/btn_controls_hover.png').replace('\\', '/'), self.to_controls)
+        self.btn_skins = Button((240, ALTURA // 2 + 240), os.path.join(DIRETORIO_IMAGENS, 'Menu/btn_skins_normal.png').replace('\\', '/'), os.path.join(DIRETORIO_IMAGENS, 'Menu/btn_skins_hover.png').replace('\\', '/'), self.to_select_skins)
 
     def controls_config(self) -> None:
         '''Configura a tela de controles.'''
@@ -35,18 +37,46 @@ class Game(Funcionalidades):
         self.teclado_contros_img = pygame.image.load(os.path.join(DIRETORIO_IMAGENS, 'Controls/teclado.png').replace('\\', '/'))
         self.btn_menu_controls = Button((35, 35), os.path.join(DIRETORIO_IMAGENS, 'Buttons/btn_menu_normal.png').replace('\\', '/'), os.path.join(DIRETORIO_IMAGENS, 'Buttons/btn_menu_hover.png').replace('\\', '/'), self.to_menu)
     
+    def skins_config(self) -> None:
+        '''Configurações da tela de selecionar skins.'''
+        self.skins_list = ['normal', 'gold']
+        self.skins_idx = 0
+        self.skins_exibicao_idx = 0
+        self.skin_selecionada = self.skins_list[self.skins_idx]
+        self.skins_exibicao = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, f'Skins/skins', f'{self.skins_list[self.skins_idx]}.png').replace('\\', '/'), 64)
+        self.skins_exibicao = self.skins_exibicao.get_sprites()
+        self.background_skins = pygame.image.load(os.path.join(DIRETORIO_IMAGENS, 'Skins/Capybara.png').replace('\\', '/'))
+        self.btn_menu_skins = Button((35, 35), os.path.join(DIRETORIO_IMAGENS, 'Buttons/btn_menu_normal.png').replace('\\', '/'), os.path.join(DIRETORIO_IMAGENS, 'Buttons/btn_menu_hover.png').replace('\\', '/'), self.to_menu)
+        self.btn_anterior = Button((LARGURA // 2 - 180, ALTURA // 2), os.path.join(DIRETORIO_IMAGENS, 'Skins/btn_anterior_normal.png').replace('\\', '/'), os.path.join(DIRETORIO_IMAGENS, 'Skins/btn_anterior_hover.png').replace('\\', '/'), self.proxima_skin)
+        self.btn_proximo = Button((LARGURA // 2 + 180, ALTURA // 2), os.path.join(DIRETORIO_IMAGENS, 'Skins/btn_proximo_normal.png').replace('\\', '/'), os.path.join(DIRETORIO_IMAGENS, 'Skins/btn_proximo_hover.png').replace('\\', '/'), self.skin_anterior)
+        self.btn_select_skin = Button((LARGURA // 2, ALTURA // 2 + 160), os.path.join(DIRETORIO_IMAGENS, 'Skins/btn_select_normal.png').replace('\\', '/'), os.path.join(DIRETORIO_IMAGENS, 'Skins/btn_select_hover.png').replace('\\', '/'), self.selecionar_skins)
+    
     def menu(self) -> None:
         '''início do jogo.'''
         self.screen.blit(self.background_menu, self.background_menu.get_rect(center=(LARGURA // 2, ALTURA // 2)))
         self.screen.blit(self.title, self.title.get_rect(center=(240, 160)))
         self.btn_play.draw(self.screen)
         self.btn_controls.draw(self.screen)
+        self.btn_skins.draw(self.screen)
     
     def controls(self) -> None:
         '''Tela de controles.'''
         self.screen.blit(self.background_controls, self.background_controls.get_rect(center=(LARGURA // 2, ALTURA // 2)))
         self.screen.blit(self.teclado_contros_img, self.teclado_contros_img.get_rect(center=(LARGURA // 2, ALTURA // 2)))
         self.btn_menu_controls.draw(self.screen)
+    
+    def skins(self) -> None:
+        '''Tela de selecionar skins.'''
+        self.screen.blit(self.background_skins, self.background_skins.get_rect(center=(LARGURA // 2, ALTURA // 2)))
+        self.skins_exibicao_idx += 0.15
+        if self.skins_exibicao_idx >= len(self.skins_exibicao):
+            self.skins_exibicao_idx = 0
+        img = pygame.transform.scale(self.skins_exibicao[int(self.skins_exibicao_idx)], (192, 192))
+        self.screen.blit(img, img.get_rect(center=(LARGURA // 2, ALTURA // 2)))
+        self.btn_menu_skins.draw(self.screen)
+        self.btn_anterior.draw(self.screen)
+        self.btn_proximo.draw(self.screen)
+        self.btn_select_skin.draw(self.screen)
     
     def estados(self) -> None:
         '''Controla os estados do jogo.'''
@@ -55,6 +85,8 @@ class Game(Funcionalidades):
                 self.menu()
             case 'CONTROLES':
                 self.controls()
+            case 'SKINS':
+                self.skins()
             case 'JOGO':
                 self.level.run()
                 if self.level.fim:
