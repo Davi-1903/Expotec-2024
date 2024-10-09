@@ -50,6 +50,7 @@ class Game(Funcionalidades):
         self.btn_anterior = Button((LARGURA // 2 - 180, ALTURA // 2), os.path.join(DIRETORIO_IMAGENS, 'Skins/btn_anterior_normal.png').replace('\\', '/'), os.path.join(DIRETORIO_IMAGENS, 'Skins/btn_anterior_hover.png').replace('\\', '/'), self.proxima_skin)
         self.btn_proximo = Button((LARGURA // 2 + 180, ALTURA // 2), os.path.join(DIRETORIO_IMAGENS, 'Skins/btn_proximo_normal.png').replace('\\', '/'), os.path.join(DIRETORIO_IMAGENS, 'Skins/btn_proximo_hover.png').replace('\\', '/'), self.skin_anterior)
         self.btn_select_skin = Button((LARGURA // 2, ALTURA // 2 + 160), os.path.join(DIRETORIO_IMAGENS, 'Skins/btn_select_normal.png').replace('\\', '/'), os.path.join(DIRETORIO_IMAGENS, 'Skins/btn_select_hover.png').replace('\\', '/'), self.selecionar_skins)
+        self.img_selected = pygame.image.load(os.path.join(DIRETORIO_IMAGENS, 'Skins/img_selected.png').replace('\\', '/'))
     
     def menu(self) -> None:
         '''início do jogo.'''
@@ -76,7 +77,10 @@ class Game(Funcionalidades):
         self.btn_menu_skins.draw(self.screen)
         self.btn_anterior.draw(self.screen)
         self.btn_proximo.draw(self.screen)
-        self.btn_select_skin.draw(self.screen)
+        if self.skin_selecionada != self.skins_list[self.skins_idx]:
+            self.btn_select_skin.draw(self.screen)
+        else:
+            self.screen.blit(self.img_selected, self.img_selected.get_rect(center=(LARGURA // 2, ALTURA // 2 + 160)))
     
     def estados(self) -> None:
         '''Controla os estados do jogo.'''
