@@ -39,7 +39,7 @@ class Game(Funcionalidades):
     
     def skins_config(self) -> None:
         '''Configurações da tela de selecionar skins.'''
-        self.skins_list = ['normal', 'gold', 'astronauta', 'pirata', 'palhaço']
+        self.skins_list = ['normal', 'gold', 'astronauta', 'pirata', 'palhaço', 'ciro']
         self.skins_idx = 0
         self.skins_exibicao_idx = 0
         self.skin_selecionada = self.skins_list[self.skins_idx]
@@ -47,8 +47,8 @@ class Game(Funcionalidades):
         self.skins_exibicao = self.skins_exibicao.get_sprites()
         self.background_skins = pygame.image.load(os.path.join(DIRETORIO_IMAGENS, 'Skins/Capybara.png').replace('\\', '/'))
         self.btn_menu_skins = Button((35, 35), os.path.join(DIRETORIO_IMAGENS, 'Buttons/btn_menu_normal.png').replace('\\', '/'), os.path.join(DIRETORIO_IMAGENS, 'Buttons/btn_menu_hover.png').replace('\\', '/'), self.to_menu)
-        self.btn_anterior = Button((LARGURA // 2 - 180, ALTURA // 2), os.path.join(DIRETORIO_IMAGENS, 'Skins/btn_anterior_normal.png').replace('\\', '/'), os.path.join(DIRETORIO_IMAGENS, 'Skins/btn_anterior_hover.png').replace('\\', '/'), self.proxima_skin)
-        self.btn_proximo = Button((LARGURA // 2 + 180, ALTURA // 2), os.path.join(DIRETORIO_IMAGENS, 'Skins/btn_proximo_normal.png').replace('\\', '/'), os.path.join(DIRETORIO_IMAGENS, 'Skins/btn_proximo_hover.png').replace('\\', '/'), self.skin_anterior)
+        self.btn_anterior = Button((LARGURA // 2 - 180, ALTURA // 2), os.path.join(DIRETORIO_IMAGENS, 'Skins/btn_anterior_normal.png').replace('\\', '/'), os.path.join(DIRETORIO_IMAGENS, 'Skins/btn_anterior_hover.png').replace('\\', '/'), self.skin_anterior)
+        self.btn_proximo = Button((LARGURA // 2 + 180, ALTURA // 2), os.path.join(DIRETORIO_IMAGENS, 'Skins/btn_proximo_normal.png').replace('\\', '/'), os.path.join(DIRETORIO_IMAGENS, 'Skins/btn_proximo_hover.png').replace('\\', '/'), self.proxima_skin)
         self.btn_select_skin = Button((LARGURA // 2, ALTURA // 2 + 160), os.path.join(DIRETORIO_IMAGENS, 'Skins/btn_select_normal.png').replace('\\', '/'), os.path.join(DIRETORIO_IMAGENS, 'Skins/btn_select_hover.png').replace('\\', '/'), self.selecionar_skins)
         self.img_selected = pygame.image.load(os.path.join(DIRETORIO_IMAGENS, 'Skins/img_selected.png').replace('\\', '/'))
     
