@@ -3,6 +3,7 @@ from pytmx.util_pygame import load_pygame
 from lib.constantes import *
 from math import ceil
 from typing import Callable
+from random import randint
 
 
 # ============================= FUNCIONALIDADES =============================
@@ -140,29 +141,31 @@ class Level:
         self.scroll = 0
         self.sprite_group_config()
         self.mapa = Mapa(mapa_idx)
-        self.add_personagens(mapa_idx)
+        self.level_config(mapa_idx)
         self.fim = False
     
-    def add_personagens(self, mapa_idx: int) -> None:
-        '''Cria os objetos respectivos ao personagem.
+    def level_config(self, mapa_idx: int) -> None:
+        '''Cria os objetos respectivos ao mapa.
         
         Parâmetros:
             self.mapa_idx -> Valor que indica qual mapa o usuário vai jogar
         '''
-        with open(os.path.join(DIRETORIO_MAPAS, f'Mapa {mapa_idx}/Data/personagens_pos.json').replace('\\', '/')) as arquivo:
-            personagens_data = json.load(arquivo)
-        for personagem in personagens_data:
+        with open(os.path.join(DIRETORIO_MAPAS, f'Mapa {mapa_idx}/Data/dados.json').replace('\\', '/')) as arquivo:
+            data = json.load(arquivo)
+        for personagem in data['personagens']:
             if personagem['personagem'] == 'capivara':
                 self.personagem = CapivaraIsa(personagem['inicio'], personagem['life'], personagem['faceRight'], self.screen, self.sprite_group_inimigos, self.sprite_group_projeteis, self.mapa.sprite_group_superficie)
                 self.sprite_group_personagem.add(self.personagem)
             if personagem['personagem'] == 'rato':
                 self.sprite_group_inimigos.add(Rato(personagem['inicio'], personagem['life'], personagem['faceRight'], personagem['limites'], self.screen, self.sprite_group_personagem, self.sprite_group_projeteis, self.mapa.sprite_group_superficie))
+        self.particles = data['particulas']
 
     def sprite_group_config(self) -> None:
         '''Configura os grupos de sprites.'''
         self.sprite_group_personagem = pygame.sprite.GroupSingle()
         self.sprite_group_inimigos = pygame.sprite.Group()
         self.sprite_group_projeteis = pygame.sprite.Group()
+        self.sprite_group_particles = pygame.sprite.Group()
 
     def update(self) -> None:
         '''Mantém o jogo atualizado constantemente.'''
@@ -170,7 +173,9 @@ class Level:
         self.mapa.mover_cenario(self.scroll)
         self.sprites_update()
         self.deslocamento_cenario()
-        self.corrigir_inimigo_pos()
+        self.corrigir_posicoes()
+        if randint(1, 20) == 1 and self.particles:
+            self.sprite_group_particles.add(Particle((randint(0, LARGURA), 0)))
         if len(self.sprite_group_inimigos) == 0:
             self.fim = True
     
@@ -181,12 +186,15 @@ class Level:
         self.sprite_group_personagem.update()
         self.sprite_group_inimigos.update()
         self.sprite_group_projeteis.update()
+        self.sprite_group_particles.update()
     
-    def corrigir_inimigo_pos(self) -> None:
+    def corrigir_posicoes(self) -> None:
         '''Corrige a posição do inimigo enquanto o personagem se mexe.'''
         for inimigo in self.sprite_group_inimigos:
             inimigo.x_atual = inimigo.x_origin + self.scroll
             inimigo.x_pos -= self.scroll_antes - self.scroll
+        for particle in self.sprite_group_particles:
+            particle.rect.x -= self.scroll_antes - self.scroll
     
     def deslocamento_cenario(self) -> None:
         '''Move cenário em relação ao eixo x.'''
@@ -207,6 +215,7 @@ class Level:
         self.sprite_group_personagem.draw(self.screen)
         self.sprite_group_inimigos.draw(self.screen)
         self.sprite_group_projeteis.draw(self.screen)
+        self.sprite_group_particles.draw(self.screen)
     
     def run(self) -> None:
         '''Carrega todas as funções da classe Level.'''
@@ -439,6 +448,35 @@ class Projeteis(pygame.sprite.Sprite):
                     item.damage(self.dano)
                 return True
         return False
+
+
+# ============================= PARTÍCULA =============================
+class Particle(pygame.sprite.Sprite):
+    '''Representa as partículas.
+    
+    Atributos:
+        size -> Tamanho da partícula
+        self.image -> Imagem da partícula
+        self.rect -> retângulo da partícula
+        self.speed_x -> Velocidade da partícula no eixo x
+        self.speed_y -> Velocidade da partícula no eixo y
+    '''
+    def __init__(self, pos: tuple):
+        '''Método construtor.'''
+        pygame.sprite.Sprite.__init__(self)
+        size = randint(2, 4)
+        self.image = pygame.Surface((size, size))
+        self.image.fill((0, 122, 0))
+        self.rect = self.image.get_rect(topleft=pos)
+        self.speed_x = randint(-3, 3)
+        self.speed_y = randint(1, 3)
+    
+    def update(self) -> None:
+        '''Atualiza a posição da partícula'''
+        self.rect.x += self.speed_x
+        self.rect.y += self.speed_y
+        if self.rect.top >= ALTURA:
+            self.kill()
 
 
 # ============================= CAPIVARA =============================
