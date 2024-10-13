@@ -10,6 +10,7 @@ class Game(Funcionalidades):
         pygame.init()
         pygame.mixer.init()
         self.estado = 'MENU'
+        self.proximo_estado = self.estado
         self.screen_config()
         self.menu_config()
         self.controls_config()
@@ -103,9 +104,25 @@ class Game(Funcionalidades):
                 else:
                     self.btn_pause.draw(self.screen)
     
+    def transicoes(self) -> None:
+        '''Transição entre telas.'''
+        if Transition.close_circle(self.screen, 1):
+            if self.proximo_estado != self.estado:
+                self.estado = self.proximo_estado
+            elif self.proximo_mapa != self.mapa:
+                self.mapa = self.proximo_mapa
+                self.level.carregar_level(self.mapa)
+                self.level.personagem.set_skin(self.skin_selecionada)
+            elif self.level.personagem.image_idx is None:
+                self.level.carregar_level(self.mapa)
+                self.level.personagem.set_skin(self.skin_selecionada)
+            self.estado = self.proximo_estado
+            Transition.new_open()
+        Transition.open_circle(self.screen, 1)
+    
     def loop(self) -> None:
         '''Deixa o jogo rodando continuamente e o atualiza constantemente.'''
-        self.mapa = 1
+        self.proximo_mapa = self.mapa = 1
         self.level = Level(self.screen, self.mapa)
         self.btn_next_level = Button((LARGURA // 2, ALTURA // 2 + 240), os.path.join(DIRETORIO_IMAGENS, 'Buttons/btn_next_level_normal.png').replace('\\', '/'), os.path.join(DIRETORIO_IMAGENS, 'Buttons/btn_next_level_hover.png').replace('\\', '/'), self.to_next_level)
         self.btn_menu_extenso = Button((LARGURA // 2, ALTURA // 2 + 240), os.path.join(DIRETORIO_IMAGENS, 'Buttons/btn_menu_extenso_normal.png').replace('\\', '/'), os.path.join(DIRETORIO_IMAGENS, 'Buttons/btn_menu_extenso_hover.png').replace('\\', '/'), self.to_menu)
@@ -119,6 +136,7 @@ class Game(Funcionalidades):
             self.clock.tick(FPS)
             self.eventos()
             self.estados()
+            self.transicoes()
             pygame.display.flip()
 
     def eventos(self) -> None:

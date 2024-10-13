@@ -11,17 +11,24 @@ class Funcionalidades:
     '''Todas as funcionalidades do jogo.'''
     def play(self) -> None:
         '''Inicia o jogo.'''
-        self.estado = 'JOGO'
+        self.proximo_estado = 'JOGO'
+        Transition.new_close()
         self.game_music.play(-1)
         self.menu_music.stop()
     
     def to_controls(self) -> None:
         '''Mostra as instruções de controle do jogo.'''
         self.estado = 'CONTROLES'
+        self.proximo_estado = self.estado
     
     def to_menu(self) -> None:
         '''Muda o estado do jogo para menu.'''
-        self.estado = 'MENU'
+        if self.estado == 'JOGO':
+            self.proximo_estado = 'MENU'
+            Transition.new_close()
+        else:
+            self.estado = 'MENU'
+            self.proximo_estado = self.estado
         self.game_music.stop()
         if self.menu_music.get_num_channels() == 0:
             self.menu_music.play(-1)
@@ -29,6 +36,7 @@ class Funcionalidades:
     def to_select_skins(self) -> None:
         '''Muda o estado do jogo para seleção de skins.'''
         self.estado = 'SKINS'
+        self.proximo_estado = self.estado
     
     def proxima_skin(self) -> None:
         '''Muda para a próxima skin do jogador.'''
@@ -53,14 +61,12 @@ class Funcionalidades:
 
     def to_next_level(self) -> None:
         '''Carrega o prómixo nível.'''
-        self.mapa += 1
-        self.level.carregar_level(self.mapa)
-        self.level.personagem.set_skin(self.skin_selecionada)
+        self.proximo_mapa += 1
+        Transition.new_close()
     
     def resetar_level(self) -> None:
-        '''Reseta o nível que está.'''
-        self.level.carregar_level(self.mapa)
-        self.level.personagem.set_skin(self.skin_selecionada)
+        '''Prepara o reset do nível que está.'''
+        Transition.new_close()
     
     def quit(self) -> None:
         '''Fecha o jogo.'''
@@ -113,6 +119,56 @@ class Button:
             else:
                 self.click = False
         screen.blit(self.image, self.rect)
+
+
+# ============================= TRANSIÇÕES =============================
+class Transition:
+    '''Representa uma transição entre telas.
+
+    Atributos:
+        cls.role -> O raio do buraco da transição
+        cls.role_open -> Permite a transição de inicio
+        cls.role_close -> Permite a transição de fim
+    '''
+    role = LARGURA
+    role_open = True
+    role_close = False
+
+    @classmethod
+    def new_open(cls) -> None:
+        '''Abre a transição'''
+        cls.role = LARGURA
+        cls.role_open = True
+        cls.role_close = False
+    
+    @classmethod
+    def new_close(cls) -> None:
+        '''Fecha a transição'''
+        cls.role = LARGURA * 2
+        cls.role_close = True
+        cls.role_open = False
+
+    @classmethod
+    def open_circle(cls, screen: pygame.Surface, duration: int) -> bool:
+        '''Inicia a transição de inicio.'''
+        if cls.role_open:
+            if cls.role < LARGURA * 2:
+                cls.role += LARGURA / (FPS * duration)
+            else:
+                cls.role_open = False
+            pygame.draw.circle(screen, 'black', (LARGURA // 2, ALTURA // 2), cls.role, LARGURA)
+        return cls.role >= LARGURA * 2
+    
+    @classmethod
+    def close_circle(cls, screen: pygame.Surface, duration: int) -> bool:
+        '''Inicia a transição de fim.'''
+        if cls.role_close:
+            if cls.role > LARGURA:
+                cls.role -= LARGURA / (FPS * duration)
+            else:
+                cls.role_close = False
+            pygame.draw.circle(screen, 'black', (LARGURA // 2, ALTURA // 2), cls.role, LARGURA)
+        return cls.role <= LARGURA
 
 
 # ============================= LEVEL =============================
