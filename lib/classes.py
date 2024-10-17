@@ -392,8 +392,6 @@ class SpriteSheet:
     '''Modela o conjunto de sprites.
     
     Atributos:
-        width -> Largura da sprite sheet
-        height -> Altura da sprite sheet
         self.sprite -> Conjunto de sprites
         self.sprite_flipped -> Conjunto de sprite virado ao contrário
     '''
@@ -412,7 +410,6 @@ class SpriteSheet:
         for l in range(0, height, size[1]):
             for c in range(0, width, size[0]):
                 sprite = sprite_sheet.subsurface((c, l, size[0], size[1]))
-                sprite = pygame.transform.scale(sprite, (96, 96)) # Temporário
                 self.sprite.append(sprite)
                 sprite = pygame.transform.flip(sprite, True, False)
                 self.sprite_flipped.append(sprite)
@@ -584,10 +581,10 @@ class CapivaraIsa(Personagem):
         self.shooting_music = pygame.mixer.Sound(os.path.join(DIRETORIO_MUSICAS,"Sound Effects/Laser Gun Sound Effect.mp3").replace('\\', '/'))
     
     def set_skin(self, skin: str) -> None:
-        sprite_sheet_idle = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, f'Capivara Sprites/{skin}/capivara_tatica_parada.png').replace('\\', '/'), (64, 64))
-        sprite_sheet_run = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, f'Capivara Sprites/{skin}/capivara_tatica_andando.png').replace('\\', '/'), (64, 64))
-        sprite_sheet_jump = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, f'Capivara Sprites/{skin}/capivara_tatica_pulando.png').replace('\\', '/'), (64, 64))
-        sprite_sheet_death = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, f'Capivara Sprites/{skin}/capivara_tatica_morrendo.png').replace('\\', '/'), (64, 64))
+        sprite_sheet_idle = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, f'Capivara Sprites/{skin}/capivara_tatica_parada.png').replace('\\', '/'), (96, 96))
+        sprite_sheet_run = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, f'Capivara Sprites/{skin}/capivara_tatica_andando.png').replace('\\', '/'), (96, 96))
+        sprite_sheet_jump = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, f'Capivara Sprites/{skin}/capivara_tatica_pulando.png').replace('\\', '/'), (96, 96))
+        sprite_sheet_death = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, f'Capivara Sprites/{skin}/capivara_tatica_morrendo.png').replace('\\', '/'), (96, 96))
         self.sprites_sheets = {
             'IDLE': (sprite_sheet_idle, 0.15),
             'RUN': (sprite_sheet_run, 0.25),
@@ -752,9 +749,9 @@ class Rato(Personagem):
             sprite_group_superficie -> Conjunto de sprites dos Tiles
         '''
         Personagem.__init__(self, pos, life, face_right)
-        sprite_sheet_run = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Rato Sprites/rato_andando.png').replace('\\', '/'), (64, 64))
-        sprite_sheet_attack = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Rato Sprites/rato_atirando.png').replace('\\', '/'), (64, 64))
-        sprite_sheet_death = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Rato Sprites/rato_morrendo.png').replace('\\', '/'), (64, 64))
+        sprite_sheet_run = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Rato Sprites/rato_andando.png').replace('\\', '/'), (96, 96))
+        sprite_sheet_attack = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Rato Sprites/rato_atirando.png').replace('\\', '/'), (96, 96))
+        sprite_sheet_death = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Rato Sprites/rato_morrendo.png').replace('\\', '/'), (96, 96))
         self.sprites_sheets = {
             'RUN': (sprite_sheet_run, 0.25),
             'DEATH': (sprite_sheet_death, 0.15),
