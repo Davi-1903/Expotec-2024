@@ -44,7 +44,7 @@ class Game(Funcionalidades):
         self.skins_idx = 0
         self.skins_exibicao_idx = 0
         self.skin_selecionada = self.skins_list[self.skins_idx]
-        self.skins_exibicao = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, f'Skins/skins', f'{self.skins_list[self.skins_idx]}.png').replace('\\', '/'), 64)
+        self.skins_exibicao = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, f'Skins/skins', f'{self.skins_list[self.skins_idx]}.png').replace('\\', '/'), (64, 64))
         self.skins_exibicao = self.skins_exibicao.get_sprites()
         self.background_skins = pygame.image.load(os.path.join(DIRETORIO_IMAGENS, 'Skins/Capybara.png').replace('\\', '/'))
         self.btn_menu_skins = Button((35, 35), os.path.join(DIRETORIO_IMAGENS, 'Buttons/btn_menu_normal.png').replace('\\', '/'), os.path.join(DIRETORIO_IMAGENS, 'Buttons/btn_menu_hover.png').replace('\\', '/'), self.to_menu)

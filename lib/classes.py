@@ -43,7 +43,7 @@ class Funcionalidades:
         self.skins_idx += 1
         if self.skins_idx >= len(self.skins_list):
             self.skins_idx = 0
-        self.skins_exibicao = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, f'Skins/skins', f'{self.skins_list[self.skins_idx]}.png').replace('\\', '/'), 64)
+        self.skins_exibicao = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, f'Skins/skins', f'{self.skins_list[self.skins_idx]}.png').replace('\\', '/'), (64, 64))
         self.skins_exibicao = self.skins_exibicao.get_sprites()
     
     def skin_anterior(self) -> None:
@@ -51,7 +51,7 @@ class Funcionalidades:
         self.skins_idx -= 1
         if self.skins_idx < 0:
             self.skins_idx = len(self.skins_list) - 1
-        self.skins_exibicao = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, f'Skins/skins', f'{self.skins_list[self.skins_idx]}.png').replace('\\', '/'), 64)
+        self.skins_exibicao = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, f'Skins/skins', f'{self.skins_list[self.skins_idx]}.png').replace('\\', '/'), (64, 64))
         self.skins_exibicao = self.skins_exibicao.get_sprites()
     
     def selecionar_skins(self) -> None:
@@ -397,7 +397,7 @@ class SpriteSheet:
         self.sprite -> Conjunto de sprites
         self.sprite_flipped -> Conjunto de sprite virado ao contrário
     '''
-    def __init__(self, sprite_sheet: str, size: int):
+    def __init__(self, sprite_sheet: str, size: tuple):
         '''Método construtor.
         
         Parâmetros:
@@ -409,9 +409,9 @@ class SpriteSheet:
         height = sprite_sheet.get_height()
         self.sprite = []
         self.sprite_flipped = []
-        for l in range(0, height, size):
-            for c in range(0, width, size):
-                sprite = sprite_sheet.subsurface((c, l, size, size))
+        for l in range(0, height, size[1]):
+            for c in range(0, width, size[0]):
+                sprite = sprite_sheet.subsurface((c, l, size[0], size[1]))
                 sprite = pygame.transform.scale(sprite, (96, 96)) # Temporário
                 self.sprite.append(sprite)
                 sprite = pygame.transform.flip(sprite, True, False)
@@ -584,10 +584,10 @@ class CapivaraIsa(Personagem):
         self.shooting_music = pygame.mixer.Sound(os.path.join(DIRETORIO_MUSICAS,"Sound Effects/Laser Gun Sound Effect.mp3").replace('\\', '/'))
     
     def set_skin(self, skin: str) -> None:
-        sprite_sheet_idle = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, f'Capivara Sprites/{skin}/capivara_tatica_parada.png').replace('\\', '/'), 64)
-        sprite_sheet_run = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, f'Capivara Sprites/{skin}/capivara_tatica_andando.png').replace('\\', '/'), 64)
-        sprite_sheet_jump = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, f'Capivara Sprites/{skin}/capivara_tatica_pulando.png').replace('\\', '/'), 64)
-        sprite_sheet_death = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, f'Capivara Sprites/{skin}/capivara_tatica_morrendo.png').replace('\\', '/'), 64)
+        sprite_sheet_idle = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, f'Capivara Sprites/{skin}/capivara_tatica_parada.png').replace('\\', '/'), (64, 64))
+        sprite_sheet_run = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, f'Capivara Sprites/{skin}/capivara_tatica_andando.png').replace('\\', '/'), (64, 64))
+        sprite_sheet_jump = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, f'Capivara Sprites/{skin}/capivara_tatica_pulando.png').replace('\\', '/'), (64, 64))
+        sprite_sheet_death = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, f'Capivara Sprites/{skin}/capivara_tatica_morrendo.png').replace('\\', '/'), (64, 64))
         self.sprites_sheets = {
             'IDLE': (sprite_sheet_idle, 0.15),
             'RUN': (sprite_sheet_run, 0.25),
@@ -752,9 +752,9 @@ class Rato(Personagem):
             sprite_group_superficie -> Conjunto de sprites dos Tiles
         '''
         Personagem.__init__(self, pos, life, face_right)
-        sprite_sheet_run = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Rato Sprites/rato_andando.png').replace('\\', '/'), 64)
-        sprite_sheet_attack = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Rato Sprites/rato_atirando.png').replace('\\', '/'), 64)
-        sprite_sheet_death = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Rato Sprites/rato_morrendo.png').replace('\\', '/'), 64)
+        sprite_sheet_run = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Rato Sprites/rato_andando.png').replace('\\', '/'), (64, 64))
+        sprite_sheet_attack = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Rato Sprites/rato_atirando.png').replace('\\', '/'), (64, 64))
+        sprite_sheet_death = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Rato Sprites/rato_morrendo.png').replace('\\', '/'), (64, 64))
         self.sprites_sheets = {
             'RUN': (sprite_sheet_run, 0.25),
             'DEATH': (sprite_sheet_death, 0.15),
