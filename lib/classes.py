@@ -79,25 +79,24 @@ class Button:
     '''Representa um botão no jogo.
     
     Atributos:
-        img_normal -> A image do botão em seu estado normal
-        img_hover -> A image do botão quando o mouse está sobre ele
+        images -> Lista de imagens do botão
         image -> A image que será exibida
         rect -> Retângulo para a exibição da imagem
         function -> Função que será executa
         click -> Diz se o botão foi clicado
     '''
-    def __init__(self, pos: tuple, img_normal: str, img_hover: str, function: Callable):
+    def __init__(self, pos: tuple, img: str, size: tuple, function: Callable):
         '''Método construtor.
 
         Parâmetros:
             pos -> Posição do botão.
-            img_normal -> Imagem do botão em seu estado normal
-            img_hover -> Imagem do botão quando o mouse está sobre ele
+            img -> Imagem do botão em seus estados
+            size -> Tamanho da imagem do botão
             function -> Função que será executada quando o botão for clicado
         '''
-        self.img_normal = pygame.image.load(img_normal).convert_alpha()
-        self.img_hover = pygame.image.load(img_hover).convert_alpha()
-        self.image = self.img_normal
+        self.images = SpriteSheet(img, size)
+        self.images = self.images.get_sprites()
+        self.image = self.images[0]
         self.rect = self.image.get_rect(center=pos)
         self.function = function
         self.click = False
@@ -108,11 +107,11 @@ class Button:
         Parâmetros:
             screen -> Tela do jogo
         '''
-        self.image = self.img_normal
+        self.image = self.images[0]
         if self.rect.collidepoint(pygame.mouse.get_pos()):
-            self.image = self.img_hover
+            self.image = self.images[1]
             if pygame.mouse.get_pressed()[0]:
-                self.image = self.img_normal
+                self.image = self.images[0]
                 if not self.click:
                     self.function()
                 self.click = True
