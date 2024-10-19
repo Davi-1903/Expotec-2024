@@ -843,6 +843,8 @@ class Rato(Personagem):
         '''Verifica se o rato colide com os tiles do mapa ou com o personagem principal.'''
         for group in [self.sprite_group_superficie, self.sprite_group_personagem]:
             for sprite in group:
+                if sprite.rect_colision.colliderect(self.rect_colision.x + self.deslocamento_x, self.rect_colision.y, self.rect_colision.width, self.rect_colision.height):
+                    self.deslocamento_x = 0
                 if sprite.rect_colision.colliderect(self.rect_colision.x, self.rect_colision.y + ceil(self.velocidade_y), self.rect_colision.width, self.rect_colision.height):
                     if self.velocidade_y > 0:
                         self.deslocamento_y = sprite.rect_colision.top - self.rect_colision.bottom
