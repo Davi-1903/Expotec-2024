@@ -459,8 +459,9 @@ class Personagem(pygame.sprite.Sprite):
         Parâmetros:
             dano -> Quantidade de dano
         '''
-        if self.life > 0:
-            self.life -= dano
+        self.life -= dano
+        if self.life < 0:
+            self.life = 0
     
     def draw_life_bar(self, display_surface: pygame.Surface, width: int) -> None:
         '''Desenha as barras de vida na tela.
@@ -472,12 +473,13 @@ class Personagem(pygame.sprite.Sprite):
         if self.life_show > self.life:
             self.life_show -= 2
         pygame.draw.rect(display_surface, (48, 48, 64), (self.x_pos + 18, self.y_pos - 20, width, 16), border_radius=5) # Gambiarra...
-        pygame.draw.rect(display_surface, (0, 255, 0), (self.x_pos + 18, self.y_pos - 20, self.life_show / self.max_life * width, 16), border_radius=5) # Gambiarra...
+        pygame.draw.rect(display_surface, (255, 0, 0), (self.x_pos + 18, self.y_pos - 20, self.life_show / self.max_life * width, 16), border_radius=5) # Gambiarra...
+        pygame.draw.rect(display_surface, (0, 255, 0), (self.x_pos + 18, self.y_pos - 20, self.life / self.max_life * width, 16), border_radius=5) # Gambiarra...
         pygame.draw.rect(display_surface, (48, 48, 64), (self.x_pos + 18, self.y_pos - 20, width, 16), 2, border_radius=5) # Gambiarra...
 
 
-# ============================= PROJETEIS =============================
-class Projeteis(pygame.sprite.Sprite):
+# ============================= PROJETIL =============================
+class Projetil(pygame.sprite.Sprite):
     '''Modela os projéteis que serão utilizados nas armas.'''
     def __init__(self, dano: int):
         '''Método construtor.
@@ -598,7 +600,7 @@ class CapivaraIsa(Personagem):
         estado_antes = self.estado
         self.deslocamento_x = self.deslocamento_y = 0
         self.gravidade()
-        if self.life > 0: # Talvez usar o `life_show`
+        if self.life_show > 0: # Talvez usar o `life_show`
             self.draw_life_bar(self.screen, 72)
             self.trocar_estado()
             self.atirar()
@@ -778,7 +780,7 @@ class Rato(Personagem):
         '''Atualiza tudo relacionado ao rato.'''
         estado_antes = self.estado
         self.gravidade()
-        if self.life > 0:
+        if self.life_show > 0:
             self.draw_life_bar(self.screen, 72)
             if estado_antes != self.estado:
                 self.image_idx = 0
@@ -918,7 +920,7 @@ class Crocodilo(Personagem):
         self.deslocamento_x = self.deslocamento_y = 0
         self.gravidade()
         if self.life_show > 0:
-            self.draw_life_bar(self.screen, 72)
+            self.draw_life_bar(self.screen, 102)
             self.mover()
             self.atacar()
             if estado_antes != self.estado:
@@ -1026,7 +1028,7 @@ class Crocodilo(Personagem):
 
 
 # ============================= BALA =============================
-class Bala(Projeteis):
+class Bala(Projetil):
     '''Representa as munições usadas no jogo.
     
     Atributos:
@@ -1045,7 +1047,7 @@ class Bala(Projeteis):
             size -> Tamanho da munição
             sprite_group_inimigos -> Conjunto de sprites dos inimigos
         '''
-        Projeteis.__init__(self, dano)
+        Projetil.__init__(self, dano)
         self.image = pygame.Surface(size)
         self.image.fill((255, 122, 0))
         self.mask = pygame.mask.from_surface(self.image)
