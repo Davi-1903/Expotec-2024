@@ -15,11 +15,11 @@
             "limites": [250, 700]
         },
         {
-            "personagem": "rato",
-            "inicio": [250, 500],
-            "life": 100,
+            "personagem": "crocodilo",
+            "inicio": [450, 450],
+            "life": 200,
             "faceRight": true,
-            "limites": [250, 1000]
+            "limites": [100, 1600]
         },
         {
             "personagem": "rato",
