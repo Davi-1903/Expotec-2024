@@ -198,6 +198,8 @@ class Level:
         self.mapa = Mapa(mapa_idx)
         self.level_config(mapa_idx)
         self.fim = False
+        self.sec = 0
+        self.min = 0
     
     def level_config(self, mapa_idx: int) -> None:
         '''Cria os objetos respectivos ao mapa.
@@ -235,6 +237,10 @@ class Level:
             self.sprite_group_particles.add(Particle((randint(0, LARGURA), 0)))
         if len(self.sprite_group_inimigos) == 0:
             self.fim = True
+        self.sec += 1
+        if self.sec // 60 == 60:
+            self.min += 1
+            self.sec = 0
     
     def sprites_update(self) -> None:
         '''Mantém as sprites atualizadas constantemente.'''
@@ -273,11 +279,24 @@ class Level:
         self.sprite_group_inimigos.draw(self.screen)
         self.sprite_group_projeteis.draw(self.screen)
         self.sprite_group_particles.draw(self.screen)
+        self.draw_text(f'{self.min:0>2}:{self.sec // FPS:0>2}', (LARGURA / 2, 40), 50, (240, 240, 255), (5, 5, (36, 36, 48)))
     
     def run(self) -> None:
         '''Carrega todas as funções da classe Level.'''
         self.update()
         self.draw()
+    
+    def draw_text(self, msg: str, pos: tuple, size: int, color: str, shadown: None | tuple) -> None:
+        '''Desenha texto na tela com a opção de sombra.'''
+        font = pygame.font.SysFont('04b19', size)
+        if shadown:
+            text = font.render(msg, True, shadown[2])
+            text_rect = text.get_rect(center=(pos[0] + shadown[0], pos[1] + shadown[1])) # Talvez
+            self.screen.blit(text, text_rect)
+        text = font.render(msg, True, color)
+        text_rect = text.get_rect(center=pos) # Talvez
+        self.screen.blit(text, text_rect)
+
 
 
 # ============================= MAPA =============================
