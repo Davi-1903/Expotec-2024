@@ -59,6 +59,12 @@ class Funcionalidades:
         self.skin_selecionada = self.skins_list[self.skins_idx]
         self.level.personagem.set_skin(self.skin_selecionada)
 
+    def to_credits(self) -> None:
+        '''Muda o estado do jogo para créditos.'''
+        self.proximo_estado = 'CREDITS'
+        self.axis_y_credits = ALTURA
+        Transition.new_close()
+
     def to_next_level(self) -> None:
         '''Carrega o prómixo nível.'''
         self.proximo_mapa += 1
