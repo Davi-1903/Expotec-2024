@@ -916,7 +916,6 @@ class Crocodilo(Personagem):
         self.sprites -> Dicionário com o conjunto de spites e a sua respectiva velocidade de animação
         self.screen -> Tela do jogo
         self.sprite_group_personagem -> Conjunto de sprites do personagem principal
-        self.sprite_group_projeteis -> Conjunto de sprites dos projéteis
         self.sprite_group_superficie -> Conjunto de sprites dos superfície
         self.image_idx -> Indica qual frame da animação será exibido. Por ser um valor float também dita a velocidade da animação.
         self.estado -> Qual estado o personagem se encontra
