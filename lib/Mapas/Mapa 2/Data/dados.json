@@ -1,5 +1,6 @@
 {
     "particulas": false,
+    "quantidade_kits": 3,
     "personagens": [
         {
             "personagem": "capivara",

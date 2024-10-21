@@ -218,6 +218,8 @@ class Level:
             if personagem['personagem'] == 'crocodilo':
                 self.sprite_group_inimigos.add(Crocodilo(personagem['inicio'], personagem['life'], personagem['faceRight'], personagem['limites'], self.screen, self.mapa.sprite_group_superficie, self.sprite_group_personagem))
         self.particles = data['particulas']
+        self.quantidade_kits = data['quantidade_kits']
+        self.img_kit = pygame.image.load(os.path.join(DIRETORIO_IMAGENS, 'kit_medico.png').replace('\\', '/'))
 
     def sprite_group_config(self) -> None:
         '''Configura os grupos de sprites.'''
@@ -241,6 +243,15 @@ class Level:
         if self.sec // 60 == 60:
             self.min += 1
             self.sec = 0
+        if pygame.key.get_pressed()[pygame.K_q]:
+            if self.quantidade_kits > 0 and self.personagem.life < 200 and not self.kit_usado:
+                self.quantidade_kits -= 1
+                self.personagem.life += 50
+                if self.personagem.life > 200:
+                    self.personagem.life = 200
+            self.kit_usado = True
+        else:
+            self.kit_usado = False
     
     def sprites_update(self) -> None:
         '''Mantém as sprites atualizadas constantemente.'''
@@ -280,6 +291,8 @@ class Level:
         self.sprite_group_projeteis.draw(self.screen)
         self.sprite_group_particles.draw(self.screen)
         self.draw_text(f'{self.min:0>2}:{self.sec // FPS:0>2}', (LARGURA / 2, 40), 50, (240, 240, 255), (5, 5, (36, 36, 48)))
+        self.screen.blit(self.img_kit, self.img_kit.get_rect(topright=(LARGURA - 12, 8)))
+        self.draw_text(str(self.quantidade_kits), (LARGURA - 106, 60), 30, (240, 240, 255), (5, 5, (36, 36, 48)))
     
     def run(self) -> None:
         '''Carrega todas as funções da classe Level.'''
