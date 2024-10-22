@@ -38,6 +38,11 @@ class Funcionalidades:
         self.estado = 'SKINS'
         self.proximo_estado = self.estado
     
+    def to_select_mapa(self) -> None:
+        '''Muda o estado do jogo para seleção de mapa.'''
+        self.estado = 'SELECT MAPA'
+        self.proximo_estado = self.estado
+    
     def proxima_skin(self) -> None:
         '''Muda para a próxima skin do jogador.'''
         self.skins_idx += 1
@@ -64,10 +69,14 @@ class Funcionalidades:
         self.proximo_estado = 'CREDITS'
         self.axis_y_credits = ALTURA
         Transition.new_close()
+        self.game_music.stop()
+        if self.menu_music.get_num_channels() == 0:
+            self.menu_music.play(-1)
 
     def to_next_level(self) -> None:
         '''Carrega o prómixo nível.'''
         self.proximo_mapa += 1
+        self.mapa_atual = self.proximo_mapa
         Transition.new_close()
     
     def resetar_level(self) -> None:

@@ -16,6 +16,7 @@ class Game(Funcionalidades):
         self.controls_config()
         self.skins_config()
         self.credits_config()
+        self.select_mapa_config()
         self.loop()
     
     def screen_config(self) -> None:
@@ -29,7 +30,7 @@ class Game(Funcionalidades):
         self.background_menu = pygame.image.load(os.path.join(DIRETORIO_IMAGENS, 'Menu/Capybara.png').replace('\\', '/'))
         self.menu_music = pygame.mixer.Sound(os.path.join(DIRETORIO_MUSICAS,"Ost/Treasury Room.mp3").replace('\\', '/'))
         self.title = pygame.image.load(os.path.join(DIRETORIO_IMAGENS, 'Menu/logo_title.png').replace('\\', '/'))
-        self.btn_play = Button((240, ALTURA // 2 + 20), os.path.join(DIRETORIO_IMAGENS, 'Menu/btn_play.png').replace('\\', '/'), (280, 70), self.play)
+        self.btn_play = Button((240, ALTURA // 2 + 20), os.path.join(DIRETORIO_IMAGENS, 'Menu/btn_play.png').replace('\\', '/'), (280, 70), self.to_select_mapa)
         self.btn_controls = Button((240, ALTURA // 2 + 100), os.path.join(DIRETORIO_IMAGENS, 'Menu/btn_controls.png').replace('\\', '/'), (280, 70), self.to_controls)
         self.btn_skins = Button((240, ALTURA // 2 + 180), os.path.join(DIRETORIO_IMAGENS, 'Menu/btn_skins.png').replace('\\', '/'), (280, 70), self.to_select_skins)
         self.btn_credits = Button((240, ALTURA // 2 + 260), os.path.join(DIRETORIO_IMAGENS, 'Menu/btn_credits.png').replace('\\', '/'), (280, 70), self.to_credits)
@@ -59,6 +60,15 @@ class Game(Funcionalidades):
         '''Configurações da tela de créditos.'''
         self.credits_image = pygame.image.load(os.path.join(DIRETORIO_IMAGENS, 'Credits/Credits.png').replace('\\', '/'))
         self.axis_y_credits = ALTURA
+    
+    def select_mapa_config(self) -> None:
+        '''Configurações da tela de seleção de mapa.'''
+        self.background_select_mapa = pygame.image.load(os.path.join(DIRETORIO_IMAGENS, 'Select Mapa/Capybara.png').replace('\\', '/'))
+        self.btn_menu_select_mapa = Button((35, 35), os.path.join(DIRETORIO_IMAGENS, 'Buttons/btn_menu.png').replace('\\', '/'), (66, 70), self.to_menu)
+        self.mapa_atual = 1
+        self.buttons_list = []
+        for idx, diretorio in enumerate(os.listdir(DIRETORIO_MAPAS)):
+            self.buttons_list.append(Button((idx * 304 + 304, ALTURA // 2 - 80), os.path.join(DIRETORIO_MAPAS, diretorio, 'Assets/btn_mapa.png').replace('\\', '/'), (96, 96), lambda : None)) # Função vazia 🙃
     
     def menu(self) -> None:
         '''início do jogo.'''
@@ -100,6 +110,20 @@ class Game(Funcionalidades):
             self.proximo_estado = 'MENU'
             Transition.new_close()
     
+    def select_mapa(self) -> None:
+        '''Tela de seleção de mapa.'''
+        self.screen.blit(self.background_select_mapa, self.background_select_mapa.get_rect(center=(LARGURA // 2, ALTURA // 2)))
+        self.btn_menu_select_mapa.draw(self.screen)
+        for idx, button in enumerate(self.buttons_list):
+            if idx in range(self.mapa_atual):
+                button.draw(self.screen)
+                if button.click and self.proximo_estado == 'SELECT MAPA':
+                    self.proximo_mapa = idx + 1
+                    self.play()
+            else:
+                img = pygame.image.load(os.path.join(DIRETORIO_MAPAS, f'Mapa {idx + 1}/Assets/btn_mapa_bloqueado.png').replace('\\', '/'))
+                self.screen.blit(img, img.get_rect(center=(idx * 304 + 304, ALTURA // 2 - 80)))
+
     def estados(self) -> None:
         '''Controla os estados do jogo.'''
         match self.estado:
@@ -111,15 +135,15 @@ class Game(Funcionalidades):
                 self.skins()
             case 'CREDITS':
                 self.credits()
+            case 'SELECT MAPA':
+                self.select_mapa()
             case 'JOGO':
                 self.level.run()
                 if self.level.fim:
                     if os.path.isdir(os.path.join(DIRETORIO_MAPAS, f'Mapa {self.mapa + 1}').replace('\\', '/')):
                         self.btn_next_level.draw(self.screen)
                     elif self.proximo_estado == 'JOGO':
-                        self.proximo_estado = 'CREDITS'
-                        self.axis_y_credits = ALTURA
-                        Transition.new_close()
+                        self.to_credits()
                 elif self.level.personagem.image_idx is None: # Gambiarra...
                     self.btn_reset.draw(self.screen)
                 else:
