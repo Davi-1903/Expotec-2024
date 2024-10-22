@@ -495,6 +495,7 @@ class Personagem(pygame.sprite.Sprite):
         '''
         pygame.sprite.Sprite.__init__(self)
         self.life = life
+        self.life_dano = self.life
         self.life_show = self.life
         self.max_life = self.life
         self.x_pos, self.y_pos = pos
@@ -509,6 +510,7 @@ class Personagem(pygame.sprite.Sprite):
         self.life -= dano
         if self.life < 0:
             self.life = 0
+        self.life_show = self.life
     
     def draw_life_bar(self, display_surface: pygame.Surface, width: int) -> None:
         '''Desenha as barras de vida na tela.
@@ -517,11 +519,14 @@ class Personagem(pygame.sprite.Sprite):
             display_surface -> Tela do jogo
             width -> largura da barra de vida
         '''
-        if self.life_show > self.life:
-            self.life_show -= 2
+        if self.life_dano > self.life:
+            self.life_dano -= 2
+        if self.life_show < self.life:
+            self.life_show += 2
+            self.life_dano = self.life_show
         pygame.draw.rect(display_surface, (48, 48, 64), (self.x_pos + 18, self.y_pos - 20, width, 16), border_radius=5) # Gambiarra...
-        pygame.draw.rect(display_surface, (255, 0, 0), (self.x_pos + 18, self.y_pos - 20, self.life_show / self.max_life * width, 16), border_radius=5) # Gambiarra...
-        pygame.draw.rect(display_surface, (0, 255, 0), (self.x_pos + 18, self.y_pos - 20, self.life / self.max_life * width, 16), border_radius=5) # Gambiarra...
+        pygame.draw.rect(display_surface, (255, 0, 0), (self.x_pos + 18, self.y_pos - 20, self.life_dano / self.max_life * width, 16), border_radius=5) # Gambiarra...
+        pygame.draw.rect(display_surface, (0, 255, 0), (self.x_pos + 18, self.y_pos - 20, self.life_show / self.max_life * width, 16), border_radius=5) # Gambiarra...
         pygame.draw.rect(display_surface, (48, 48, 64), (self.x_pos + 18, self.y_pos - 20, width, 16), 2, border_radius=5) # Gambiarra...
 
 
@@ -647,7 +652,7 @@ class CapivaraIsa(Personagem):
         estado_antes = self.estado
         self.deslocamento_x = self.deslocamento_y = 0
         self.gravidade()
-        if self.life_show > 0: # Talvez usar o `life_show`
+        if self.life_dano > 0: # Talvez usar o `life_show`
             self.draw_life_bar(self.screen, 72)
             self.trocar_estado()
             self.atirar()
@@ -827,7 +832,7 @@ class Rato(Personagem):
         '''Atualiza tudo relacionado ao rato.'''
         estado_antes = self.estado
         self.gravidade()
-        if self.life_show > 0:
+        if self.life_dano > 0:
             self.draw_life_bar(self.screen, 72)
             if estado_antes != self.estado:
                 self.image_idx = 0
@@ -965,7 +970,7 @@ class Crocodilo(Personagem):
         estado_antes = self.estado
         self.deslocamento_x = self.deslocamento_y = 0
         self.gravidade()
-        if self.life_show > 0:
+        if self.life_dano > 0:
             self.draw_life_bar(self.screen, 102)
             self.mover()
             self.atacar()
