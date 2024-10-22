@@ -962,6 +962,7 @@ class Crocodilo(Personagem):
         self.x_origin = pos[0]
         self.x_atual = self.x_origin
         self.velocidade_y = 0
+        self.bite_sound = pygame.mixer.Sound(os.path.join(DIRETORIO_MUSICAS, 'Sound Effects/Aligator Bite Sound Effect.mp3').replace('\\', '/'))
         self.select_animation()
         self.exibicao_config()
     
@@ -1025,6 +1026,7 @@ class Crocodilo(Personagem):
         for personagem in self.sprite_group_personagem:
             if self.estado == 'ATTACK' and self.image_idx + self.speed_animation >= len(self.sprites_atual):
                 personagem.damage(25)
+                self.bite_sound.play()
     
     def gravidade(self) -> None:
         '''Aplica a gravidade ao personagem.'''
