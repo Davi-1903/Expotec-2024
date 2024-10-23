@@ -23,7 +23,7 @@ class Funcionalidades:
     
     def to_menu(self) -> None:
         '''Muda o estado do jogo para menu.'''
-        if self.estado == 'JOGO':
+        if self.estado in ['JOGO', 'CREDITS']:
             self.proximo_estado = 'MENU'
             Transition.new_close()
         else:

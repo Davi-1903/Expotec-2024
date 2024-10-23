@@ -60,6 +60,7 @@ class Game(Funcionalidades):
         '''Configurações da tela de créditos.'''
         self.credits_image = pygame.image.load(os.path.join(DIRETORIO_IMAGENS, 'Credits/Credits.png').replace('\\', '/'))
         self.axis_y_credits = ALTURA
+        self.btn_menu_credits = Button((35, 35), os.path.join(DIRETORIO_IMAGENS, 'Buttons/btn_menu.png').replace('\\', '/'), (66, 70), self.to_menu)
     
     def select_mapa_config(self) -> None:
         '''Configurações da tela de seleção de mapa.'''
@@ -104,6 +105,7 @@ class Game(Funcionalidades):
     def credits(self) -> None:
         '''Tela dos créditos.'''
         self.screen.blit(self.credits_image, (0, self.axis_y_credits))
+        self.btn_menu_credits.draw(self.screen)
         if self.axis_y_credits >= -self.credits_image.get_height():
             self.axis_y_credits -= 1
         elif self.proximo_estado == 'CREDITS':
