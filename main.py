@@ -190,7 +190,6 @@ class Game(Funcionalidades):
             self.estados()
             self.transicoes()
             pygame.display.flip()
-            print(self.zerado)
 
     def eventos(self) -> None:
         '''Analisa se o usário fechou o jogo ou não.'''
