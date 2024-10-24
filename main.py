@@ -180,7 +180,7 @@ class Game(Funcionalidades):
         self.btn_menu_extenso = Button((LARGURA // 2, ALTURA // 2 + 240), os.path.join(DIRETORIO_IMAGENS, 'Buttons/btn_menu_extenso.png').replace('\\', '/'), (280, 70), self.to_menu)
         self.btn_pause = Button((40, 40), os.path.join(DIRETORIO_IMAGENS, 'Buttons/btn_pausa.png').replace('\\', '/'), (50, 52), self.to_menu)
         self.btn_reset = Button((LARGURA // 2, ALTURA // 2 + 240), os.path.join(DIRETORIO_IMAGENS, 'Buttons/btn_reset.png').replace('\\', '/'), (280, 70), self.resetar_level)
-        self.game_music = pygame.mixer.Sound(os.path.join(DIRETORIO_MUSICAS,"Ost/Dracula's Castle.mp3").replace('\\', '/'))
+        self.game_music = pygame.mixer.Sound(os.path.join(DIRETORIO_MUSICAS, 'Ost/Dracula\'s Castle.mp3').replace('\\', '/'))
         self.menu_music.play(-1) # -1 é para tocar em loop
 
         while True:

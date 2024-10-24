@@ -13,8 +13,9 @@ class Funcionalidades:
         '''Inicia o jogo.'''
         self.proximo_estado = 'JOGO'
         Transition.new_close()
-        self.game_music.play(-1)
         self.menu_music.stop()
+        if self.game_music.get_num_channels() == 0:
+            self.game_music.play(-1)
     
     def to_controls(self) -> None:
         '''Mostra as instruções de controle do jogo.'''
