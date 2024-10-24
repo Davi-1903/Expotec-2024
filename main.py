@@ -10,6 +10,7 @@ class Game(Funcionalidades):
         pygame.init()
         pygame.mixer.init()
         self.estado = 'MENU'
+        self.zerado = False
         self.proximo_estado = self.estado
         self.screen_config()
         self.menu_config()
@@ -31,6 +32,7 @@ class Game(Funcionalidades):
         self.menu_music = pygame.mixer.Sound(os.path.join(DIRETORIO_MUSICAS,"Ost/Treasury Room.mp3").replace('\\', '/'))
         self.title = pygame.image.load(os.path.join(DIRETORIO_IMAGENS, 'Menu/logo_title.png').replace('\\', '/'))
         self.btn_play = Button((240, ALTURA // 2 + 20), os.path.join(DIRETORIO_IMAGENS, 'Menu/btn_play.png').replace('\\', '/'), (280, 70), self.to_select_mapa)
+        self.btn_new_game = Button((240, ALTURA // 2 + 20), os.path.join(DIRETORIO_IMAGENS, 'Menu/btn_new_game.png').replace('\\', '/'), (280, 70), self.new_game)
         self.btn_controls = Button((240, ALTURA // 2 + 100), os.path.join(DIRETORIO_IMAGENS, 'Menu/btn_controls.png').replace('\\', '/'), (280, 70), self.to_controls)
         self.btn_skins = Button((240, ALTURA // 2 + 180), os.path.join(DIRETORIO_IMAGENS, 'Menu/btn_skins.png').replace('\\', '/'), (280, 70), self.to_select_skins)
         self.btn_credits = Button((240, ALTURA // 2 + 260), os.path.join(DIRETORIO_IMAGENS, 'Menu/btn_credits.png').replace('\\', '/'), (280, 70), self.to_credits)
@@ -75,7 +77,10 @@ class Game(Funcionalidades):
         '''início do jogo.'''
         self.screen.blit(self.background_menu, self.background_menu.get_rect(center=(LARGURA // 2, ALTURA // 2)))
         self.screen.blit(self.title, self.title.get_rect(center=(240, 160)))
-        self.btn_play.draw(self.screen)
+        if not self.zerado:
+            self.btn_play.draw(self.screen)
+        else:
+            self.btn_new_game.draw(self.screen)
         self.btn_controls.draw(self.screen)
         self.btn_skins.draw(self.screen)
         self.btn_credits.draw(self.screen)
@@ -109,6 +114,8 @@ class Game(Funcionalidades):
         if self.axis_y_credits >= -self.credits_image.get_height():
             self.axis_y_credits -= 1
         elif self.proximo_estado == 'CREDITS':
+            if self.mapa == len(os.listdir(DIRETORIO_MAPAS)):
+                self.zerado = True
             self.proximo_estado = 'MENU'
             Transition.new_close()
     
@@ -183,6 +190,7 @@ class Game(Funcionalidades):
             self.estados()
             self.transicoes()
             pygame.display.flip()
+            print(self.zerado)
 
     def eventos(self) -> None:
         '''Analisa se o usário fechou o jogo ou não.'''

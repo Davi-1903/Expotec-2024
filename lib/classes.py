@@ -24,6 +24,8 @@ class Funcionalidades:
     def to_menu(self) -> None:
         '''Muda o estado do jogo para menu.'''
         if self.estado in ['JOGO', 'CREDITS']:
+            if self.mapa == len(os.listdir(DIRETORIO_MAPAS)):
+                self.zerado = True
             self.proximo_estado = 'MENU'
             Transition.new_close()
         else:
@@ -78,6 +80,11 @@ class Funcionalidades:
         self.mapa_atual += 1
         self.proximo_estado = 'SELECT MAPA'
         Transition.new_close()
+    
+    def new_game(self) -> None:
+        '''Inicia um novo jogo.'''
+        self.mapa_atual = 1
+        self.zerado = False
     
     def resetar_level(self) -> None:
         '''Prepara o reset do nível que está.'''
