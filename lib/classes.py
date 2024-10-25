@@ -260,8 +260,6 @@ class Level:
         self.corrigir_posicoes()
         if randint(1, 20) == 1 and self.particles:
             self.sprite_group_particles.add(Particle((randint(0, LARGURA), 0)))
-        if len(self.sprite_group_inimigos) == 0:
-            self.fim = True
         self.sec += 1
         if self.sec // 60 == 60:
             self.min += 1
@@ -303,8 +301,10 @@ class Level:
                 self.personagem.mover()
         if self.scroll < -self.mapa.width * TILE_SIZE + LARGURA:
             self.scroll = -self.mapa.width * TILE_SIZE + LARGURA
-            if self.personagem.deslocamento_x != 0 and self.personagem.rect_colision.right < LARGURA:
+            if self.personagem.deslocamento_x != 0 and (self.personagem.rect_colision.right < LARGURA or len(self.sprite_group_inimigos) == 0):
                 self.personagem.mover()
+        if self.personagem.rect_colision.left >= LARGURA:
+            self.fim = True
     
     def draw(self) -> None:
         '''Desenha todas as sprites na tela.'''

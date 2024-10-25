@@ -150,7 +150,8 @@ class Game(Funcionalidades):
                 self.level.run()
                 if self.level.fim:
                     if os.path.isdir(os.path.join(DIRETORIO_MAPAS, f'Mapa {self.mapa + 1}').replace('\\', '/')):
-                        self.btn_next_level.draw(self.screen)
+                        if self.mapa == self.mapa_atual:
+                            self.to_next_level()
                     elif self.proximo_estado == 'JOGO':
                         self.to_credits()
                 elif self.level.personagem.image_idx is None: # Gambiarra...
@@ -176,7 +177,6 @@ class Game(Funcionalidades):
         '''Deixa o jogo rodando continuamente e o atualiza constantemente.'''
         self.proximo_mapa = self.mapa = 1
         self.level = Level(self.screen, self.mapa)
-        self.btn_next_level = Button((LARGURA // 2, ALTURA // 2 + 240), os.path.join(DIRETORIO_IMAGENS, 'Buttons/btn_next_level.png').replace('\\', '/'), (350, 70), self.to_next_level)
         self.btn_menu_extenso = Button((LARGURA // 2, ALTURA // 2 + 240), os.path.join(DIRETORIO_IMAGENS, 'Buttons/btn_menu_extenso.png').replace('\\', '/'), (280, 70), self.to_menu)
         self.btn_pause = Button((40, 40), os.path.join(DIRETORIO_IMAGENS, 'Buttons/btn_pausa.png').replace('\\', '/'), (50, 52), self.to_menu)
         self.btn_reset = Button((LARGURA // 2, ALTURA // 2 + 240), os.path.join(DIRETORIO_IMAGENS, 'Buttons/btn_reset.png').replace('\\', '/'), (280, 70), self.resetar_level)
