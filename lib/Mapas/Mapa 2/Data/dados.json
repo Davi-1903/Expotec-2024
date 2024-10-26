@@ -23,11 +23,11 @@
             "limites": [100, 1600]
         },
         {
-            "personagem": "rato",
-            "inicio": [1400, 500],
-            "life": 100,
+            "personagem": "gorila",
+            "inicio": [1500, 300],
+            "life": 500,
             "faceRight": true,
-            "limites": [1400, 1650]
+            "limites": [1350, 2050]
         }
     ]
 }

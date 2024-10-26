@@ -25,7 +25,7 @@ class Funcionalidades:
     def to_menu(self) -> None:
         '''Muda o estado do jogo para menu.'''
         if self.estado in ['JOGO', 'CREDITS']:
-            if self.mapa == len(os.listdir(DIRETORIO_MAPAS)):
+            if self.mapa == len(os.listdir(DIRETORIO_MAPAS)) and self.level.fim:
                 self.zerado = True
             self.proximo_estado = 'MENU'
             Transition.new_close()
@@ -85,6 +85,7 @@ class Funcionalidades:
     def new_game(self) -> None:
         '''Inicia um novo jogo.'''
         self.mapa_atual = 1
+        self.proximo_mapa = 1
         self.zerado = False
     
     def resetar_level(self) -> None:
@@ -240,6 +241,8 @@ class Level:
                 self.sprite_group_inimigos.add(Rato(personagem['inicio'], personagem['life'], personagem['faceRight'], personagem['limites'], self.screen, self.sprite_group_personagem, self.sprite_group_projeteis, self.mapa.sprite_group_superficie))
             if personagem['personagem'] == 'crocodilo':
                 self.sprite_group_inimigos.add(Crocodilo(personagem['inicio'], personagem['life'], personagem['faceRight'], personagem['limites'], self.screen, self.mapa.sprite_group_superficie, self.sprite_group_personagem))
+            if personagem['personagem'] == 'gorila':
+                self.sprite_group_inimigos.add(Gorila(personagem['inicio'], personagem['life'], personagem['faceRight'], personagem['limites'], self.screen, self.mapa.sprite_group_superficie, self.sprite_group_personagem))
         self.particles = data['particulas']
         self.quantidade_kits = data['quantidade_kits']
         self.img_kit = pygame.image.load(os.path.join(DIRETORIO_IMAGENS, 'kit_medico.png').replace('\\', '/'))
@@ -1074,6 +1077,163 @@ class Crocodilo(Personagem):
         if self.image_idx >= len(self.sprites_atual):
             self.image_idx = 0
 
+    def colisao(self) -> None:
+        '''Verifica se o personagem está colidindo com outro objeto.'''
+        for group in [self.sprite_group_personagem, self.sprite_group_superficie]:
+            for sprite in group:
+                if sprite.rect_colision.colliderect(self.rect_colision.x + self.deslocamento_x, self.rect_colision.y, self.rect_colision.width, self.rect_colision.height):
+                    self.deslocamento_x = 0
+                elif sprite.rect_colision.colliderect(self.rect_colision.x, self.rect_colision.y + ceil(self.velocidade_y), self.rect_colision.width, self.rect_colision.height):
+                    if self.velocidade_y > 0:
+                        self.deslocamento_y = sprite.rect_colision.top - self.rect_colision.bottom
+                    else:
+                        self.deslocamento_y = self.rect_colision.top - sprite.rect_colision.bottom
+                    self.velocidade_y = 0
+
+
+# ============================= GORILA =============================
+class Gorila(Personagem):
+    '''Representa um gorila.
+    
+    Atributos:
+        self.sprites -> Dicionário com o conjunto de spites e a sua respectiva velocidade de animação
+        self.screen -> Tela do jogo
+        self.sprite_group_personagem -> Conjunto de sprites do personagem principal
+        self.sprite_group_superficie -> Conjunto de sprites dos superfície
+        self.image_idx -> Indica qual frame da animação será exibido. Por ser um valor float também dita a velocidade da animação.
+        self.estado -> Qual estado o personagem se encontra
+        self.x_origin -> Posição x inicial
+        self.x_atual -> Posição x que o rato se encontra
+        self.limites -> distancia no eixo x na qual o rato irá se movimentar
+        self.velocidade_y -> velocidade no eixo y
+        self.deslocamento_x -> O quanto será deslocado no eixo x
+    '''
+    def __init__(self, pos: tuple, life: int, face_right: bool, limites: list, screen: pygame.Surface, sprite_group_superficie: pygame.sprite.Group, sprite_group_personagem: pygame.sprite.GroupSingle):
+        '''Método construtor.
+        
+        Parâmetros:
+            pos -> tupla que guarda o eixo x e y do mapa: (eixo_x, eixo_y) respectivamente
+            life -> vida do inimigo
+            face_right -> Se True deixa a imagem virada para direta. Se false deixa a imagem virada para a esquerda
+            limites -> são os limites da movimentação do crocodilo. (Baseado em intervalos, Ex: [500, 800])
+            screen -> Tela do jogo
+            sprite_group_superficie -> Conjunto de sprites dos Tiles
+            sprite_group_personagem -> Conjunto de sprites do personagem principal
+        '''
+        Personagem.__init__(self, pos, life, face_right)
+        self.sprites_config()
+        self.estado = 'IDLE'
+        self.image_idx = 0
+        self.limites = limites
+        self.screen = screen
+        self.sprite_group_superficie = sprite_group_superficie
+        self.sprite_group_personagem = sprite_group_personagem
+        self.x_origin = pos[0]
+        self.x_atual = self.x_origin
+        self.velocidade_y = 0
+        self.select_animation()
+        self.exibicao_config()
+    
+    def update(self) -> None:
+        '''Atualiza o estado do personagem.'''
+        estado_antes = self.estado
+        self.deslocamento_x = self.deslocamento_y = 0
+        self.gravidade()
+        if self.life_show > 0:
+            self.draw_life_bar(self.screen, 156)
+            self.mover()
+            self.atacar()
+            if estado_antes != self.estado:
+                self.image_idx = 0
+            self.select_animation()
+            self.exibicao_config()
+            self.animar()
+            self.colisao()
+            self.x_pos += self.deslocamento_x
+            self.y_pos += self.deslocamento_y
+        elif self.image_idx is not None:
+            self.estado = 'DEATH'
+            if estado_antes != self.estado:
+                self.image_idx = 0
+            self.select_animation()
+            self.exibicao_config()
+            self.image_idx += self.speed_animation
+            if self.image_idx >= len(self.sprites_atual):
+                self.image_idx = None
+        else:
+            self.kill()
+    
+    def mover(self) -> None:
+        '''Move o personagem e altera o estado.'''
+        for personagem in self.sprite_group_personagem:
+            self.estado = 'IDLE'
+            if (
+                personagem.life > 0 and
+                personagem.rect_colision.centery in range(self.rect.top, self.rect.bottom) and
+                personagem.rect_colision.centerx + self.x_origin - self.x_atual in range(*self.limites)
+            ):
+                self.estado = 'RUN'
+                if personagem.rect_colision.centerx < self.rect_colision.centerx and self.rect_colision.left - personagem.rect_colision.right >= 10:
+                    self.face_right = False
+                    self.deslocamento_x = -0.5
+                elif personagem.rect_colision.left - self.rect_colision.right >= 10:
+                    self.face_right = True
+                    self.deslocamento_x = 0.5
+                elif 0 < personagem.rect_colision.left - self.rect_colision.right < 10 or 0 < self.rect_colision.left - personagem.rect_colision.right < 10:
+                    self.deslocamento_x = 0
+                    self.estado = 'ATTACK'
+                    if personagem.rect_colision.right < self.rect_colision.left:
+                        self.face_right = False
+                    elif self.rect_colision.right < personagem.rect_colision.left:
+                        self.face_right = True
+                else:
+                    self.estado = 'IDLE'
+    
+    def atacar(self) -> None:
+        '''Ataca o personagem principal.'''
+        for personagem in self.sprite_group_personagem:
+            if self.estado == 'ATTACK' and self.image_idx + self.speed_animation >= len(self.sprites_atual):
+                personagem.damage(50)
+    
+    def gravidade(self) -> None:
+        '''Aplica a gravidade no personagem.'''
+        self.velocidade_y += GRAVIDADE
+        self.deslocamento_y += self.velocidade_y
+
+    def sprites_config(self) -> None:
+        '''Configura as sprites do personagem.'''
+        sprite_sheet_idle = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Gorila Sprites/gorila_parado.png'), (192, 192))
+        sprite_sheet_run = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Gorila Sprites/gorila_andando.png'), (192, 192))
+        sprite_sheet_attack = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Gorila Sprites/gorila_atacando.png'), (192, 192))
+        sprite_sheet_death = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Gorila Sprites/gorila_morrendo.png'), (192, 192))
+        self.sprites = {
+            'IDLE': (sprite_sheet_idle, 0.125),
+            'RUN': (sprite_sheet_run, 0.15),
+            'ATTACK': (sprite_sheet_attack, 0.15),
+            'DEATH': (sprite_sheet_death, 0.15)
+        }
+    
+    def select_animation(self) -> None:
+        '''Seleciona a animação do personagem.'''
+        sprite_sheet = self.sprites[self.estado][0]
+        self.sprites_atual = sprite_sheet.get_sprites(self.face_right)
+        self.speed_animation = self.sprites[self.estado][1]
+    
+    def exibicao_config(self) -> None:
+        '''Configura a exibição do personagem.'''
+        self.image = self.sprites_atual[int(self.image_idx)]
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect(topleft=(self.x_pos, self.y_pos))
+        self.rect_colision = pygame.Rect(self.x_pos + 45, self.y_pos + 30, 100, 110)
+    
+    def animar(self) -> None:
+        '''Animar o personagem.'''
+        self.image_idx += self.speed_animation
+        if self.image_idx >= len(self.sprites_atual):
+            if self.estado == 'ATTACK':
+                self.estado = 'IDLE'
+            self.image_idx = 0
+        
     def colisao(self) -> None:
         '''Verifica se o personagem está colidindo com outro objeto.'''
         for group in [self.sprite_group_personagem, self.sprite_group_superficie]:
