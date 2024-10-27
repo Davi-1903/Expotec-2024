@@ -2,6 +2,10 @@
 
 Projeto para a Expotec 2024, 1º jogo
 
+<p align="center">
+    <img loading="lazy" src="image.png" width="700">
+</p>
+
 ## Requerimentos
 
 O jogo foi feito utilizando a biblioteca `pygame`. Além dela, também foram necessários a utilização de outras bibliotecas que não são padrões do python, por isso é preciso que elas também sejam baixadas.
