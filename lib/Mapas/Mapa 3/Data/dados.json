@@ -15,28 +15,28 @@
         {
             "personagem": "rato",
             "inicio": [410, 450],
-            "life": 200,
+            "life": 100,
             "faceRight": true,
             "limites": [400, 1010]
         },
         {
             "personagem": "crocodilo",
             "inicio": [1450, 300],
-            "life": 100,
+            "life": 200,
             "faceRight": true,
             "limites": [1450, 1650]
         },
         {
             "personagem": "crocodilo",
             "inicio": [1750, 300],
-            "life": 100,
+            "life": 200,
             "faceRight": true,
             "limites": [1750, 1950]
         },
         {
             "personagem": "rato",
             "inicio": [2080, 450],
-            "life": 200,
+            "life": 100,
             "faceRight": true,
             "limites": [2080, 2400]
         },
