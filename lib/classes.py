@@ -244,6 +244,7 @@ class Level:
             if personagem['personagem'] == 'gorila':
                 self.sprite_group_inimigos.add(Gorila(personagem['inicio'], personagem['life'], personagem['faceRight'], personagem['limites'], self.screen, self.mapa.sprite_group_superficie, self.sprite_group_personagem))
         self.particles = data['particulas']
+        self.parallax = data['parallax']
         self.quantidade_kits = data['quantidade_kits']
         self.img_kit = pygame.image.load(os.path.join(DIRETORIO_IMAGENS, 'kit_medico.png').replace('\\', '/'))
 
@@ -279,7 +280,7 @@ class Level:
     
     def sprites_update(self) -> None:
         '''Mantém as sprites atualizadas constantemente.'''
-        self.mapa.draw_background(self.screen, self.scroll)
+        self.mapa.draw_background(self.screen, self.scroll, self.parallax)
         self.mapa.draw_mapa(self.screen, self.scroll)
         self.sprite_group_personagem.update()
         self.sprite_group_inimigos.update()
@@ -395,15 +396,16 @@ class Mapa:
         for objetos in self.mapa.objects:
             screen.blit(pygame.transform.rotate(objetos.image, -objetos.rotation), (objetos.x + scroll, objetos.y))
     
-    def draw_background(self, screen: pygame.Surface, scroll: int) -> None:
+    def draw_background(self, screen: pygame.Surface, scroll: int, parallax: bool) -> None:
         '''Desenha o Background na tela.
         
         Parâmetros:
             screen -> Tela do jogo
             scroll -> Tela no eixo x
+            parallax -> Se o background vai ter parallax ou não
         '''
         for idx, background in enumerate(self.backgrounds):
-            screen.blit(background, (idx * background.get_width() + scroll // 4, 0))
+            screen.blit(background, (idx * background.get_width() + scroll // 4 if parallax else scroll, 0))
     
     def mover_cenario(self, scroll: int) -> None:
         '''Move o cenário em relação ao scroll.

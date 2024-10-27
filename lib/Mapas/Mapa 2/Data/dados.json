@@ -1,6 +1,7 @@
 {
     "particulas": false,
     "quantidade_kits": 3,
+    "parallax": true,
     "personagens": [
         {
             "personagem": "capivara",
