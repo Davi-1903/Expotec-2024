@@ -247,7 +247,8 @@ class Level:
                 self.sprite_group_inimigos.add(Aguia(personagem['inicio'], personagem['life'], personagem['faceRight'], personagem['limites'], self.screen, self.mapa.sprite_group_superficie, self.sprite_group_personagem, self.sprite_group_projeteis))
         self.particles = data['particulas']
         self.parallax = data['parallax']
-        self.quantidade_kits = data['quantidade_kits']
+        self.quantidade_kits = data['kit_medico']['quantidade']
+        self.kit_cura = data['kit_medico']['cura']
         self.img_kit = pygame.image.load(os.path.join(DIRETORIO_IMAGENS, 'kit_medico.png').replace('\\', '/'))
 
     def sprite_group_config(self) -> None:
@@ -273,7 +274,7 @@ class Level:
         if pygame.key.get_pressed()[pygame.K_q]:
             if self.quantidade_kits > 0 and self.personagem.life < 200 and not self.kit_usado:
                 self.quantidade_kits -= 1
-                self.personagem.life += 50
+                self.personagem.life += self.kit_cura
                 if self.personagem.life > 200:
                     self.personagem.life = 200
             self.kit_usado = True

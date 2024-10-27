@@ -1,6 +1,9 @@
 {
     "particulas": true,
-    "quantidade_kits": 3,
+    "kit_medico": {
+        "quantidade": 3,
+        "cura": 50
+    },
     "parallax": true,
     "personagens": [
         {
