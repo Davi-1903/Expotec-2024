@@ -20,7 +20,7 @@
             "inicio": [450, 450],
             "life": 200,
             "faceRight": true,
-            "limites": [100, 1600]
+            "limites": [100, 1150]
         },
         {
             "personagem": "gorila",

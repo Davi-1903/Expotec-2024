@@ -1022,7 +1022,7 @@ class Crocodilo(Personagem):
                 elif personagem.rect_colision.left - self.rect_colision.right >= 10:
                     self.face_right = False
                     self.deslocamento_x = VELOCIDADE / 1.5
-                elif 0 < personagem.rect_colision.left - self.rect_colision.right < 10 or 0 < self.rect_colision.left - personagem.rect_colision.right < 10:
+                elif -VELOCIDADE < personagem.rect_colision.left - self.rect_colision.right < 10 or -VELOCIDADE < self.rect_colision.left - personagem.rect_colision.right < 10:
                     self.deslocamento_x = 0
                     self.estado = 'ATTACK'
                     if personagem.rect_colision.right < self.rect_colision.left:
@@ -1179,7 +1179,7 @@ class Gorila(Personagem):
                 elif personagem.rect_colision.left - self.rect_colision.right >= 10:
                     self.face_right = True
                     self.deslocamento_x = 0.5
-                elif 0 < personagem.rect_colision.left - self.rect_colision.right < 10 or 0 < self.rect_colision.left - personagem.rect_colision.right < 10:
+                elif -VELOCIDADE < personagem.rect_colision.left - self.rect_colision.right < 10 or -VELOCIDADE < self.rect_colision.left - personagem.rect_colision.right < 10:
                     self.deslocamento_x = 0
                     self.estado = 'ATTACK'
                     if personagem.rect_colision.right < self.rect_colision.left:
