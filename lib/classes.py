@@ -1013,7 +1013,7 @@ class Crocodilo(Personagem):
             if (
                 personagem.life > 0 and
                 personagem.rect_colision.centery in range(self.rect.top, self.rect.bottom) and
-                personagem.rect_colision.centerx + self.x_origin - self.x_atual in range(self.limites[0] - (self.x_origin - self.x_atual), self.limites[1] - (self.x_origin - self.x_atual))
+                personagem.rect_colision.centerx + self.x_origin - self.x_atual in range(*self.limites)
             ):
                 self.estado = 'RUN'
                 if personagem.rect_colision.centerx < self.rect_colision.centerx and self.rect_colision.left - personagem.rect_colision.right >= 10:
