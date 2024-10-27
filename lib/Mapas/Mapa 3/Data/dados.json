@@ -1,0 +1,48 @@
+{
+    "particulas": false,
+    "quantidade_kits": 3,
+    "parallax": false,
+    "personagens": [
+        {
+            "personagem": "capivara",
+            "inicio": [50, 500],
+            "life": 200,
+            "faceRight": true
+        },
+        {
+            "personagem": "rato",
+            "inicio": [410, 450],
+            "life": 200,
+            "faceRight": true,
+            "limites": [400, 1010]
+        },
+        {
+            "personagem": "crocodilo",
+            "inicio": [1450, 300],
+            "life": 100,
+            "faceRight": true,
+            "limites": [1450, 1650]
+        },
+        {
+            "personagem": "crocodilo",
+            "inicio": [1750, 300],
+            "life": 100,
+            "faceRight": true,
+            "limites": [1750, 1950]
+        },
+        {
+            "personagem": "rato",
+            "inicio": [2080, 450],
+            "life": 200,
+            "faceRight": true,
+            "limites": [2080, 2400]
+        },
+        {
+            "personagem": "aguia",
+            "inicio": [2850, 300],
+            "life": 600,
+            "faceRight": false,
+            "limites": [2500, 3450]
+        }
+    ]
+}

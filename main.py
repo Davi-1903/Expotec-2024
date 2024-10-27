@@ -71,7 +71,7 @@ class Game(Funcionalidades):
         self.mapa_atual = 1
         self.buttons_list = []
         for idx, diretorio in enumerate(os.listdir(DIRETORIO_MAPAS)):
-            self.buttons_list.append(Button((idx * 304 + 304, ALTURA // 2 - 80), os.path.join(DIRETORIO_MAPAS, diretorio, 'Assets/btn_mapa.png').replace('\\', '/'), (96, 96), lambda : None)) # Função vazia 🙃
+            self.buttons_list.append(Button((idx * 264 + 216, ALTURA // 2 - 80), os.path.join(DIRETORIO_MAPAS, diretorio, 'Assets/btn_mapa.png').replace('\\', '/'), (96, 96), lambda : None)) # Função vazia 🙃
     
     def menu(self) -> None:
         '''início do jogo.'''
@@ -131,7 +131,7 @@ class Game(Funcionalidades):
                     self.play()
             else:
                 img = pygame.image.load(os.path.join(DIRETORIO_MAPAS, f'Mapa {idx + 1}/Assets/btn_mapa_bloqueado.png').replace('\\', '/'))
-                self.screen.blit(img, img.get_rect(center=(idx * 304 + 304, ALTURA // 2 - 80)))
+                self.screen.blit(img, img.get_rect(center=(idx * 264 + 216, ALTURA // 2 - 80)))
 
     def estados(self) -> None:
         '''Controla os estados do jogo.'''
