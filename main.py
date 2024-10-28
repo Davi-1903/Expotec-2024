@@ -151,7 +151,7 @@ class Game(Funcionalidades):
                 self.level.run()
                 if self.level.fim:
                     if os.path.isdir(os.path.join(DIRETORIO_MAPAS, f'Mapa {self.mapa + 1}').replace('\\', '/')):
-                        if self.mapa == self.mapa_atual:
+                        if self.proximo_estado != 'SELECT MAPA':
                             self.to_next_level()
                     elif self.proximo_estado == 'JOGO':
                         self.to_credits()
@@ -165,9 +165,7 @@ class Game(Funcionalidades):
         if Transition.close_circle(self.screen, 1):
             if self.proximo_mapa != self.mapa:
                 self.mapa = self.proximo_mapa
-                self.level.carregar_level(self.mapa)
-                self.level.personagem.set_skin(self.skin_selecionada)
-            elif self.level.personagem.image_idx is None:
+            if self.proximo_estado == 'JOGO':
                 self.level.carregar_level(self.mapa)
                 self.level.personagem.set_skin(self.skin_selecionada)
             self.estado = self.proximo_estado

@@ -78,7 +78,7 @@ class Funcionalidades:
 
     def to_next_level(self) -> None:
         '''Carrega o prómixo nível.'''
-        self.mapa_atual += 1
+        self.mapa_atual = self.mapa + 1
         self.proximo_estado = 'SELECT MAPA'
         Transition.new_close()
     
