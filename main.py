@@ -24,7 +24,7 @@ class Game(Funcionalidades):
         '''Configura a tela com largura, altura, nome e fps.'''
         self.screen = pygame.display.set_mode((LARGURA, ALTURA))
         pygame.display.set_caption('Operation Capybara: Tactical Strike Beta')
-        pygame.display.set_icon(pygame.image.load(os.path.join(DIRETORIO_IMAGENS, 'icon.png')))
+        pygame.display.set_icon(pygame.image.load(os.path.join(DIRETORIO_IMAGENS, 'icon.png').replace('\\', '/')))
         self.clock = pygame.time.Clock()
     
     def menu_config(self) -> None:
