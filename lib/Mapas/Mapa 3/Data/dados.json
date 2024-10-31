@@ -45,7 +45,7 @@
             "inicio": [2850, 300],
             "life": 600,
             "faceRight": false,
-            "limites": [2500, 3450]
+            "limites": [2400, 3450]
         }
     ]
 }

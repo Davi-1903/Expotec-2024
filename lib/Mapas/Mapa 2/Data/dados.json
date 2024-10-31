@@ -31,7 +31,7 @@
             "inicio": [1500, 300],
             "life": 500,
             "faceRight": true,
-            "limites": [1350, 2050]
+            "limites": [1250, 2050]
         }
     ]
 }
