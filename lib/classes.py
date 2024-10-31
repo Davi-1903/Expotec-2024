@@ -225,6 +225,7 @@ class Level:
         self.fim = False
         self.sec = 0
         self.min = 0
+        self.progress = self.progress_show = 0
     
     def level_config(self, mapa_idx: int) -> None:
         '''Cria os objetos respectivos ao mapa.
@@ -246,6 +247,7 @@ class Level:
                 self.sprite_group_inimigos.add(Gorila(personagem['inicio'], personagem['life'], personagem['faceRight'], personagem['limites'], self.screen, self.mapa.sprite_group_superficie, self.sprite_group_personagem))
             if personagem['personagem'] == 'aguia':
                 self.sprite_group_inimigos.add(Aguia(personagem['inicio'], personagem['life'], personagem['faceRight'], personagem['limites'], self.screen, self.mapa.sprite_group_superficie, self.sprite_group_personagem, self.sprite_group_projeteis))
+        self.quantidade_inimigos = len(data['personagens']) - 1 # -1 por conta da capivara
         self.particles = data['particulas']
         self.parallax = data['parallax']
         self.quantidade_kits = data['kit_medico']['quantidade']
@@ -313,6 +315,7 @@ class Level:
                 self.personagem.mover()
         if self.personagem.rect_colision.left >= LARGURA:
             self.fim = True
+        self.progress = (self.quantidade_inimigos - len(self.sprite_group_inimigos)) / self.quantidade_inimigos
     
     def draw(self) -> None:
         '''Desenha todas as sprites na tela.'''
@@ -324,13 +327,16 @@ class Level:
         self.draw_text(f'{self.min:0>2}:{self.sec // FPS:0>2}', (LARGURA / 2, 40), 50, (240, 240, 255), (5, 5, (36, 36, 48)))
         self.screen.blit(self.img_kit, self.img_kit.get_rect(topright=(LARGURA - 12, 8)))
         self.draw_text(str(self.quantidade_kits), (LARGURA - 106, 60), 30, (240, 240, 255), (5, 5, (36, 36, 48)))
+        self.progress_bar()
+        self.draw_text('Inimigos', (895, 100), 16, 'white') # Gambiarra
+        self.draw_text('derrotados', (895, 120), 16, 'white') # Aqui também
     
     def run(self) -> None:
         '''Carrega todas as funções da classe Level.'''
         self.update()
         self.draw()
     
-    def draw_text(self, msg: str, pos: tuple, size: int, color: str, shadown: None | tuple) -> None:
+    def draw_text(self, msg: str, pos: tuple, size: int, color: str, shadown: None | tuple = None) -> None:
         '''Desenha texto na tela com a opção de sombra.'''
         font = pygame.font.SysFont('04b19', size)
         if shadown:
@@ -341,6 +347,15 @@ class Level:
         text_rect = text.get_rect(center=pos) # Talvez
         self.screen.blit(text, text_rect)
 
+    def progress_bar(self) -> None:
+        '''Barra de progresso do nível.'''
+        if self.progress_show < self.progress:
+            self.progress_show += 0.0125
+        if self.progress_show > 1:
+            self.progress_show = 1
+        pygame.draw.rect(self.screen, (48, 48, 64), (LARGURA - 120, 140, 110, 20), border_radius=5)
+        pygame.draw.rect(self.screen, 'yellow', (LARGURA - 120, 140, self.progress_show * 110, 20), border_radius=5)
+        pygame.draw.rect(self.screen, (48, 48, 64), (LARGURA - 120, 140, 110, 20), 2, border_radius=5)
 
 
 # ============================= MAPA =============================
