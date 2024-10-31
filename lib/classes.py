@@ -694,6 +694,7 @@ class CapivaraIsa(Personagem):
                 self.image_idx = None
             self.exibicao_config()
             self.colisao()
+            self.y_pos += self.deslocamento_y
     
     def pular(self) -> None:
         '''Faz a capivara pular.'''
