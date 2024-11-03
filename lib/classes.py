@@ -97,6 +97,18 @@ class Funcionalidades:
         '''Fecha o jogo.'''
         pygame.quit()
         exit()
+    
+    @staticmethod
+    def draw_text(screen: pygame.Surface, msg: str, pos: tuple, size: int, color: str, shadown: None | tuple = None) -> None:
+        '''Desenha texto na tela com a opção de sombra.'''
+        font = pygame.font.SysFont('04b19', size)
+        if shadown:
+            text = font.render(msg, True, shadown[2])
+            text_rect = text.get_rect(center=(pos[0] + shadown[0], pos[1] + shadown[1])) # Talvez
+            screen.blit(text, text_rect)
+        text = font.render(msg, True, color)
+        text_rect = text.get_rect(center=pos) # Talvez
+        screen.blit(text, text_rect)
 
 
 # ============================= BOTÃO =============================
@@ -324,29 +336,18 @@ class Level:
         self.sprite_group_inimigos.draw(self.screen)
         self.sprite_group_projeteis.draw(self.screen)
         self.sprite_group_particles.draw(self.screen)
-        self.draw_text(f'{self.min:0>2}:{self.sec // FPS:0>2}', (LARGURA / 2, 40), 50, (240, 240, 255), (5, 5, (36, 36, 48)))
+        Funcionalidades.draw_text(self.screen, f'{self.min:0>2}:{self.sec // FPS:0>2}', (LARGURA / 2, 40), 50, (240, 240, 255), (5, 5, (36, 36, 48)))
         self.screen.blit(self.img_kit, self.img_kit.get_rect(topright=(LARGURA - 12, 8)))
-        self.draw_text(str(self.quantidade_kits), (LARGURA - 106, 60), 30, (240, 240, 255), (5, 5, (36, 36, 48)))
+        Funcionalidades.draw_text(self.screen, str(self.quantidade_kits), (LARGURA - 106, 60), 30, (240, 240, 255), (5, 5, (36, 36, 48)))
         self.progress_bar()
-        self.draw_text('Inimigos', (895, 100), 16, 'white') # Gambiarra
-        self.draw_text('derrotados', (895, 120), 16, 'white') # Aqui também
+        Funcionalidades.draw_text(self.screen, 'Inimigos', (895, 100), 16, 'white') # Gambiarra
+        Funcionalidades.draw_text(self.screen, 'derrotados', (895, 120), 16, 'white') # Aqui também
     
     def run(self) -> None:
         '''Carrega todas as funções da classe Level.'''
         self.update()
         self.draw()
     
-    def draw_text(self, msg: str, pos: tuple, size: int, color: str, shadown: None | tuple = None) -> None:
-        '''Desenha texto na tela com a opção de sombra.'''
-        font = pygame.font.SysFont('04b19', size)
-        if shadown:
-            text = font.render(msg, True, shadown[2])
-            text_rect = text.get_rect(center=(pos[0] + shadown[0], pos[1] + shadown[1])) # Talvez
-            self.screen.blit(text, text_rect)
-        text = font.render(msg, True, color)
-        text_rect = text.get_rect(center=pos) # Talvez
-        self.screen.blit(text, text_rect)
-
     def progress_bar(self) -> None:
         '''Barra de progresso do nível.'''
         if self.progress_show < self.progress:
