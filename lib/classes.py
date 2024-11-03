@@ -1377,21 +1377,20 @@ class Aguia(Personagem):
             if personagem.rect_colision.centerx + self.x_origin - self.x_atual in range(*self.limites) and self.balas_cadencia == 0 and personagem.life > 0:
                 self.balas_cadencia = 50
                 if self.face_right:
-                    self.sprite_group_projeteis.add(Bala((self.rect_colision.centerx + 80, self.y_pos + 55), 24 if self.face_right else -24, -4, 10, (12, 6), [self.sprite_group_personagem, self.sprite_group_superficie]))
-                    self.sprite_group_projeteis.add(Bala((self.rect_colision.centerx + 80, self.y_pos + 55), 26 if self.face_right else -26, -2, 10, (12, 6), [self.sprite_group_personagem, self.sprite_group_superficie]))
-                    self.sprite_group_projeteis.add(Bala((self.rect_colision.centerx + 80, self.y_pos + 55), 28 if self.face_right else -28, 0, 10, (12, 6), [self.sprite_group_personagem, self.sprite_group_superficie]))
-                    self.sprite_group_projeteis.add(Bala((self.rect_colision.centerx + 80, self.y_pos + 55), 26 if self.face_right else -26, 2, 10, (12, 6), [self.sprite_group_personagem, self.sprite_group_superficie]))
-                    self.sprite_group_projeteis.add(Bala((self.rect_colision.centerx + 80, self.y_pos + 55), 24 if self.face_right else -24, 4, 10, (12, 6), [self.sprite_group_personagem, self.sprite_group_superficie]))
+                    self.sprite_group_projeteis.add(Bala((self.rect_colision.centerx + 40, self.y_pos + 55), 24 if self.face_right else -24, -4, 10, (12, 6), [self.sprite_group_personagem, self.sprite_group_superficie]))
+                    self.sprite_group_projeteis.add(Bala((self.rect_colision.centerx + 40, self.y_pos + 55), 26 if self.face_right else -26, -2, 10, (12, 6), [self.sprite_group_personagem, self.sprite_group_superficie]))
+                    self.sprite_group_projeteis.add(Bala((self.rect_colision.centerx + 40, self.y_pos + 55), 28 if self.face_right else -28, 0, 10, (12, 6), [self.sprite_group_personagem, self.sprite_group_superficie]))
+                    self.sprite_group_projeteis.add(Bala((self.rect_colision.centerx + 40, self.y_pos + 55), 26 if self.face_right else -26, 2, 10, (12, 6), [self.sprite_group_personagem, self.sprite_group_superficie]))
+                    self.sprite_group_projeteis.add(Bala((self.rect_colision.centerx + 40, self.y_pos + 55), 24 if self.face_right else -24, 4, 10, (12, 6), [self.sprite_group_personagem, self.sprite_group_superficie]))
                 else:
-                    self.sprite_group_projeteis.add(Bala((self.rect_colision.centerx, self.y_pos + 55), 24 if self.face_right else -24, -4, 10, (12, 6), [self.sprite_group_personagem, self.sprite_group_superficie]))
-                    self.sprite_group_projeteis.add(Bala((self.rect_colision.centerx, self.y_pos + 55), 26 if self.face_right else -26, -2, 10, (12, 6), [self.sprite_group_personagem, self.sprite_group_superficie]))
-                    self.sprite_group_projeteis.add(Bala((self.rect_colision.centerx, self.y_pos + 55), 26 if self.face_right else -26, -2, 10, (12, 6), [self.sprite_group_personagem, self.sprite_group_superficie]))
-                    self.sprite_group_projeteis.add(Bala((self.rect_colision.centerx, self.y_pos + 55), 28 if self.face_right else -28, 0, 10, (12, 6), [self.sprite_group_personagem, self.sprite_group_superficie]))
-                    self.sprite_group_projeteis.add(Bala((self.rect_colision.centerx, self.y_pos + 55), 26 if self.face_right else -26, 2, 10, (12, 6), [self.sprite_group_personagem, self.sprite_group_superficie]))
-                    self.sprite_group_projeteis.add(Bala((self.rect_colision.centerx, self.y_pos + 55), 24 if self.face_right else -24, 4, 10, (12, 6), [self.sprite_group_personagem, self.sprite_group_superficie]))
+                    self.sprite_group_projeteis.add(Bala((self.rect_colision.centerx - 30, self.y_pos + 55), 24 if self.face_right else -24, -4, 10, (12, 6), [self.sprite_group_personagem, self.sprite_group_superficie]))
+                    self.sprite_group_projeteis.add(Bala((self.rect_colision.centerx - 30, self.y_pos + 55), 26 if self.face_right else -26, -2, 10, (12, 6), [self.sprite_group_personagem, self.sprite_group_superficie]))
+                    self.sprite_group_projeteis.add(Bala((self.rect_colision.centerx - 30, self.y_pos + 55), 26 if self.face_right else -26, -2, 10, (12, 6), [self.sprite_group_personagem, self.sprite_group_superficie]))
+                    self.sprite_group_projeteis.add(Bala((self.rect_colision.centerx - 30, self.y_pos + 55), 28 if self.face_right else -28, 0, 10, (12, 6), [self.sprite_group_personagem, self.sprite_group_superficie]))
+                    self.sprite_group_projeteis.add(Bala((self.rect_colision.centerx - 30, self.y_pos + 55), 26 if self.face_right else -26, 2, 10, (12, 6), [self.sprite_group_personagem, self.sprite_group_superficie]))
+                    self.sprite_group_projeteis.add(Bala((self.rect_colision.centerx - 30, self.y_pos + 55), 24 if self.face_right else -24, 4, 10, (12, 6), [self.sprite_group_personagem, self.sprite_group_superficie]))
         if self.balas_cadencia > 0:
             self.balas_cadencia -= 1
-
     
     def gravidade(self) -> None:
         '''Aplica a gravidade ao personagem.'''
@@ -1405,7 +1404,7 @@ class Aguia(Personagem):
         sprite_sheet_death = SpriteSheet(os.path.join(DIRETORIO_IMAGENS, 'Eagle Sprites/aguia_morrendo.png').replace('\\', '/'), (128, 128))
         self.sprites = {
             'IDLE': (sprite_sheet_idle, 0.15),
-            'RUN': (sprite_sheet_run, 0.35),
+            'RUN': (sprite_sheet_run, 0.25),
             'DEATH': (sprite_sheet_death, 0.15)
         }
 
