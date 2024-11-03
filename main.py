@@ -115,7 +115,7 @@ class Game(Funcionalidades):
         if self.axis_y_credits >= -self.credits_image.get_height():
             self.axis_y_credits -= 1
         elif self.proximo_estado == 'CREDITS':
-            if self.mapa == len(os.listdir(DIRETORIO_MAPAS)):
+            if self.mapa == len(os.listdir(DIRETORIO_MAPAS)) and self.level.fim:
                 self.zerado = True
             self.proximo_estado = 'MENU'
             Transition.new_close()
