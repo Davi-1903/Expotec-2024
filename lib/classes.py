@@ -1154,6 +1154,7 @@ class Gorila(Personagem):
         self.x_origin = pos[0]
         self.x_atual = self.x_origin
         self.velocidade_y = 0
+        self.punch_sound = pygame.mixer.Sound(os.path.join(DIRETORIO_MUSICAS, 'Sound Effects', 'Punch Sound Effect.mp3').replace('\\', '/'))
         self.select_animation()
         self.exibicao_config()
     
@@ -1217,6 +1218,7 @@ class Gorila(Personagem):
         for personagem in self.sprite_group_personagem:
             if self.estado == 'ATTACK' and self.image_idx + self.speed_animation >= len(self.sprites_atual):
                 personagem.damage(50)
+                self.punch_sound.play()
     
     def gravidade(self) -> None:
         '''Aplica a gravidade no personagem.'''
