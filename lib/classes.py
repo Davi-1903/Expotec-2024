@@ -4,6 +4,7 @@ from lib.constantes import *
 from math import ceil
 from typing import Callable
 from random import randint
+from sys import exit
 
 
 # ============================= FUNCIONALIDADES =============================
