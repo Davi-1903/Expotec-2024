@@ -57,7 +57,7 @@ class Game(Funcionalidades):
         self.btn_anterior = Button((LARGURA // 2 - 180, ALTURA // 2), os.path.join(DIRETORIO_IMAGENS, 'Skins/btn_anterior.png').replace('\\', '/'), (66, 70), self.skin_anterior)
         self.btn_proximo = Button((LARGURA // 2 + 180, ALTURA // 2), os.path.join(DIRETORIO_IMAGENS, 'Skins/btn_proximo.png').replace('\\', '/'), (66, 70), self.proxima_skin)
         self.btn_select_skin = Button((LARGURA // 2, ALTURA // 2 + 160), os.path.join(DIRETORIO_IMAGENS, 'Skins/btn_select.png').replace('\\', '/'), (280, 70), self.selecionar_skins)
-        self.img_selected = pygame.image.load(os.path.join(DIRETORIO_IMAGENS, 'Skins/img_selected.png').replace('\\', '/'))
+        self.btn_selected_skin = Button((LARGURA // 2, ALTURA // 2 + 160), os.path.join(DIRETORIO_IMAGENS, 'Skins', 'btn_selected.png').replace('\\', '/'), (280, 70), lambda : None)
     
     def credits_config(self) -> None:
         '''Configurações da tela de créditos.'''
@@ -106,7 +106,7 @@ class Game(Funcionalidades):
         if self.skin_selecionada != self.skins_list[self.skins_idx]:
             self.btn_select_skin.draw(self.screen)
         else:
-            self.screen.blit(self.img_selected, self.img_selected.get_rect(center=(LARGURA // 2, ALTURA // 2 + 160)))
+            self.btn_selected_skin.draw(self.screen)
     
     def credits(self) -> None:
         '''Tela dos créditos.'''
